@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: tasks-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "${MYSQL_PORT}:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - tasks-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: tasks-backend
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_MAIL_HOST: ${SPRING_MAIL_HOST}
+      SPRING_MAIL_PORT: ${SPRING_MAIL_PORT}
+      SPRING_MAIL_USERNAME: ${SPRING_MAIL_USERNAME}
+      SPRING_MAIL_PASSWORD: ${SPRING_MAIL_PASSWORD}
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: true
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: true
+    ports:
+      - "${BACKEND_PORT}:8080"
+    networks:
+      - tasks-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: tasks-frontend
+    ports:
+      - "${FRONTEND_PORT}:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    environment:
+      REACT_APP_API_URL: ${REACT_APP_API_URL}
+    networks:
+      - tasks-network
+
+networks:
+  tasks-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
