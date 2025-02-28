@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { User, UserFormData } from '../types/User';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
+const API_URL = import.meta.env.VITE_APP_API_URL || 'http://localhost:8080/api';
 
 export const userService = {
   getUsers: async (): Promise<User[]> => {

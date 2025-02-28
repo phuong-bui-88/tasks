@@ -1,17 +1,25 @@
 package com.tasks.service;
 
-import com.tasks.dto.UserCreateDto;
-import com.tasks.dto.UserDto;
-import com.tasks.dto.UserUpdateDto;
+import com.tasks.dto.UserDTO;
+import com.tasks.dto.UserCreateDTO;
+import com.tasks.dto.UserUpdateDTO;
+import com.tasks.dto.RegistrationRequest;
+import com.tasks.dto.AuthResponse;
 
 import java.util.List;
 
+
 public interface UserService {
-    List<UserDto> getAllUsers();
-    UserDto getUserById(Long id);
-    UserDto createUser(UserCreateDto userCreateDto);
-    UserDto updateUser(Long id, UserUpdateDto userUpdateDto);
+    AuthResponse registerUser(RegistrationRequest registrationRequest);
+    UserDTO findByUsername(String username);
+    UserDTO findByEmail(String email);
+    boolean existsByUsername(String username);
+    List<UserDTO> getAllUsers();
+    UserDTO getUserById(Long id);
+    UserDTO createUser(UserCreateDTO userCreateDto);
+    UserDTO updateUser(Long id, UserUpdateDTO userUpdateDto);
     void deleteUser(Long id);
-    UserDto getUserByUsername(String username);
-    UserDto getUserByEmail(String email);
+    UserDTO getUserByUsername(String username);
+    UserDTO getUserByEmail(String email);
+    boolean existsByEmail(String email);
 }

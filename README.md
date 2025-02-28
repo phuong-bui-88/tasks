@@ -196,3 +196,37 @@ E2E testing is implemented using Cypress:
 cd frontend
 npm run cypress:open
 ```
+
+# UserService Compilation Error Fix
+
+## Problem
+The UserService.java file has compilation errors where code appears outside of a class or method definition. The errors occur at lines 135, 137-140, and 142-143.
+
+## Cause
+This is typically caused by:
+1. Missing closing braces (`}`)
+2. Extra code outside of the class definition
+3. Incorrect nesting of classes or methods
+
+## Solution
+We've created a utility script `UserServiceFix.java` that:
+1. Reads the problematic file
+2. Analyzes the brace structure
+3. Adds missing closing braces where needed
+4. Writes the corrected file back to disk
+
+## Manual Fix Instructions
+If the automatic script doesn't work, you can manually fix the file by:
+
+1. Open `/app/src/main/java/com/tasks/service/UserService.java`
+2. Look at line 135 and below
+3. Check for any code that is outside of method definitions
+4. Ensure all opened braces are properly closed
+5. Make sure the class definition is properly closed with a `}`
+6. Check for any dangling code after the class closing brace
+
+## Common Patterns That Cause This Error
+- Missing closing braces for methods or internal classes
+- Unintentional code or text outside of method definitions
+- Copy-pasted code fragments that weren't properly integrated into the class structure
+- Commented out code with mismatched comment delimiters

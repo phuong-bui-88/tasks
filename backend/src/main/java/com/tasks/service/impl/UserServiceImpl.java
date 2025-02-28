@@ -1,12 +1,15 @@
 package com.tasks.service.impl;
 
-import com.tasks.dto.UserCreateDto;
-import com.tasks.dto.UserDto;
-import com.tasks.dto.UserUpdateDto;
+import com.tasks.dto.AuthResponse;
+import com.tasks.dto.RegistrationRequest;
+import com.tasks.dto.UserCreateDTO;
+import com.tasks.dto.UserDTO;
+import com.tasks.dto.UserUpdateDTO;
 import com.tasks.exception.ResourceAlreadyExistsException;
 import com.tasks.exception.ResourceNotFoundException;
 import com.tasks.model.User;
 import com.tasks.repository.UserRepository;
+import com.tasks.service.JwtService;
 import com.tasks.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,31 +22,57 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-
-    @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
+    @Override
+    public AuthResponse registerUser(RegistrationRequest registrationRequest) {
+        // Implementation for registering a user
+        return null;
     }
 
     @Override
-    public List<UserDto> getAllUsers() {
+    public UserDTO findByUsername(String username) {
+        // Implementation for finding a user by username
+        return null;
+    }
+
+    @Override
+    public UserDTO findByEmail(String email) {
+        // Implementation for finding a user by email
+        return null;
+    }
+
+    @Override
+    public boolean existsByUsername(String username) {
+        // Implementation for checking if a username exists
+        return false;
+    }
+
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+
+    @Autowired
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+    }
+
+    @Override
+    public List<UserDTO> getAllUsers() {
         return userRepository.findAll().stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public UserDto getUserById(Long id) {
+    public UserDTO getUserById(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
         return convertToDto(user);
     }
 
     @Override
-    public UserDto createUser(UserCreateDto userCreateDto) {
+    public UserDTO createUser(UserCreateDTO userCreateDto) {
         // Check if username exists
         if (userRepository.existsByUsername(userCreateDto.getUsername())) {
             throw new ResourceAlreadyExistsException("Username already exists: " + userCreateDto.getUsername());
@@ -74,7 +103,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto updateUser(Long id, UserUpdateDto userUpdateDto) {
+    public UserDTO updateUser(Long id, UserUpdateDTO userUpdateDto) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
         
@@ -135,29 +164,34 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto getUserByUsername(String username) {
+    public UserDTO getUserByUsername(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
         return convertToDto(user);
     }
 
     @Override
-    public UserDto getUserByEmail(String email) {
+    public UserDTO getUserByEmail(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
         return convertToDto(user);
     }
 
-    private UserDto convertToDto(User user) {
-        UserDto userDto = new UserDto();
-        userDto.setId(user.getId());
-        userDto.setUsername(user.getUsername());
-        userDto.setEmail(user.getEmail());
-        userDto.setFirstName(user.getFirstName());
-        userDto.setLastName(user.getLastName());
-        userDto.setRole(user.getRole());
-        userDto.setCreatedAt(user.getCreatedAt());
-        userDto.setActive(user.isActive());
-        return userDto;
+    @Override
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    private UserDTO convertToDto(User user) {
+        UserDTO UserDTO = new UserDTO();
+        UserDTO.setId(user.getId());
+        UserDTO.setUsername(user.getUsername());
+        UserDTO.setEmail(user.getEmail());
+        UserDTO.setFirstName(user.getFirstName());
+        UserDTO.setLastName(user.getLastName());
+        UserDTO.setRole(user.getRole());
+        UserDTO.setCreatedAt(user.getCreatedAt());
+        UserDTO.setActive(user.isActive());
+        return UserDTO;
     }
 }

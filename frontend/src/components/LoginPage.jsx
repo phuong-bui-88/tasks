@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import './LoginPage.css'; // We'll create this CSS file
+import './LoginPage.css';
+import RegisterPage from './RegisterPage'; // Import the new component
 
 function LoginPage({ onLogin }) {
     const [credentials, setCredentials] = useState({
@@ -7,6 +8,7 @@ function LoginPage({ onLogin }) {
         password: ''
     });
     const [error, setError] = useState('');
+    const [isRegistering, setIsRegistering] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -27,6 +29,45 @@ function LoginPage({ onLogin }) {
         }
     };
 
+    const handleRegister = (userData) => {
+        // Call the backend API to register the user
+        fetch('/api/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userData)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Registration failed');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Log the user in automatically after successful registration
+                const loginSuccessful = onLogin({
+                    username: userData.username,
+                    password: userData.password
+                });
+
+                if (!loginSuccessful) {
+                    setError('Automatic login after registration failed');
+                }
+            })
+            .catch(error => {
+                setError(error.message || 'Registration failed');
+            });
+    };
+
+    if (isRegistering) {
+        return <RegisterPage
+            onRegister={handleRegister}
+            onCancel={() => setIsRegistering(false)}
+            error={error}
+        />;
+    }
+
     return (
         <div className="login-page">
             <div className="login-card">
@@ -34,9 +75,9 @@ function LoginPage({ onLogin }) {
                     <h2>Welcome Back</h2>
                     <p>Please sign in to continue</p>
                 </div>
-                
+
                 {error && <div className="error-message">{error}</div>}
-                
+
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
                         <div className="input-icon-wrapper">
@@ -52,7 +93,7 @@ function LoginPage({ onLogin }) {
                             />
                         </div>
                     </div>
-                    
+
                     <div className="form-group">
                         <div className="input-icon-wrapper">
                             <i className="icon icon-lock"></i>
@@ -67,13 +108,20 @@ function LoginPage({ onLogin }) {
                             />
                         </div>
                     </div>
-                    
+
                     <div className="form-footer">
                         <button type="submit" className="login-button">
                             Sign In
                         </button>
                         <div className="additional-options">
                             <a href="#" className="forgot-password">Forgot password?</a>
+                            <button
+                                type="button"
+                                className="register-button"
+                                onClick={() => setIsRegistering(true)}
+                            >
+                                Create Account
+                            </button>
                         </div>
                     </div>
                 </form>

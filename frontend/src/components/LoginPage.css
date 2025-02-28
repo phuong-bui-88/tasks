@@ -4,7 +4,7 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: #f5f7fa;
   padding: 20px;
   box-sizing: border-box;
 }
@@ -15,8 +15,8 @@
   max-width: 400px;
   background-color: white;
   border-radius: 12px;
-  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
-  padding: 40px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  padding: 30px;
   transition: transform 0.3s ease;
 }
 
@@ -32,19 +32,19 @@
 
 .login-header h2 {
   color: #333;
-  font-size: 28px;
-  margin-bottom: 8px;
+  font-size: 24px;
+  margin-bottom: 10px;
 }
 
 .login-header p {
-  color: #777;
+  color: #666;
   font-size: 14px;
   margin: 0;
 }
 
 /* Form Groups */
 .form-group {
-  margin-bottom: 22px;
+  margin-bottom: 20px;
 }
 
 /* Input with Icon */
@@ -56,8 +56,8 @@
 
 .icon {
   position: absolute;
-  left: 15px;
-  color: #9ca3af;
+  left: 12px;
+  color: #a0a0a0;
   font-size: 18px;
 }
 
@@ -73,10 +73,10 @@
 /* Form Inputs */
 input {
   width: 100%;
-  padding: 15px 15px 15px 45px;
+  padding: 12px 12px 12px 40px;
   border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  font-size: 16px;
+  border-radius: 6px;
+  font-size: 15px;
   transition: all 0.3s;
   box-sizing: border-box;
   background-color: #f9fafb;
@@ -84,7 +84,7 @@ input {
 
 input:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #007bff;
   box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
   background-color: #fff;
 }
@@ -96,19 +96,19 @@ input::placeholder {
 /* Button */
 .login-button {
   width: 100%;
-  padding: 15px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 12px 0;
+  background-color: #007bff;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   color: white;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.3s;
 }
 
 .login-button:hover {
-  box-shadow: 0 7px 15px rgba(102, 126, 234, 0.4);
+  background-color: #0069d9;
 }
 
 .login-button:active {
@@ -122,28 +122,42 @@ input::placeholder {
 
 .additional-options {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: center;
   margin-top: 16px;
 }
 
 .forgot-password {
-  color: #667eea;
+  color: #007bff;
   font-size: 14px;
   text-decoration: none;
   transition: color 0.3s;
 }
 
 .forgot-password:hover {
-  color: #764ba2;
+  text-decoration: underline;
+}
+
+/* Register Button */
+.register-button {
+  background-color: transparent;
+  color: #007bff;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+}
+
+.register-button:hover {
   text-decoration: underline;
 }
 
 /* Error Message */
 .error-message {
-  background-color: #fed7d7;
-  color: #e53e3e;
-  padding: 12px;
-  border-radius: 8px;
+  background-color: #ffebee;
+  color: #d32f2f;
+  padding: 10px;
+  border-radius: 4px;
   margin-bottom: 20px;
   font-size: 14px;
   text-align: center;
