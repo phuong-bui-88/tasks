@@ -1,13 +1,23 @@
-FROM node:16-alpine
+FROM node:18-alpine
 
 WORKDIR /app
 
-COPY package*.json ./
+# install curl
+RUN apk add --no-cache curl
 
+# Copy package.json and package-lock.json first for better caching
+COPY package*.json ./
 RUN npm install
 
+RUN chown -R node:node /app/node_modules
+
+# Copy the rest of the application
 COPY . .
 
-EXPOSE 3000
+# Create the cache directory and set permissions
+RUN mkdir -p .vite_cache && chmod -R 777 .vite_cache
 
-CMD ["npm", "start"]
+# Start the application
+CMD ["npm", "run","dev"]
+
+EXPOSE 5173

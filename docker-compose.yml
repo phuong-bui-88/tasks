@@ -45,14 +45,18 @@ services:
       dockerfile: Dockerfile
     container_name: tasks-frontend
     ports:
-      - "${FRONTEND_PORT}:3000"
+      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
     volumes:
       - ./frontend:/app
-      - /app/node_modules
+      - frontend-node-modules:/app/node_modules
     depends_on:
       - backend
     environment:
       REACT_APP_API_URL: ${REACT_APP_API_URL}
+      NODE_ENV: development
+      CHOKIDAR_USEPOLLING: "true"
+      VITE_PORT: ${FRONTEND_PORT}
+    user: "node"  # Use the node user instead of root
     networks:
       - tasks-network
 
@@ -62,3 +66,4 @@ networks:
 
 volumes:
   mysql-data:
+  frontend-node-modules:

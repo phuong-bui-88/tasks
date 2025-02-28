@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 
-function CreateTask({ setTasks }) {
+function EditTask({ tasks, setTasks }) {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState('PENDING');
@@ -9,8 +12,22 @@ function CreateTask({ setTasks }) {
   const [assigneeEmail, setAssigneeEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
-  
-  const navigate = useNavigate();
+  const [notFound, setNotFound] = useState(false);
+
+  useEffect(() => {
+    const task = tasks.find(task => task.id === parseInt(id) || task.id === id);
+    
+    if (!task) {
+      setNotFound(true);
+      return;
+    }
+    
+    setTitle(task.title);
+    setDescription(task.description || '');
+    setStatus(task.status);
+    setDueDate(task.dueDate ? task.dueDate.substring(0, 10) : '');
+    setAssigneeEmail(task.assigneeEmail || '');
+  }, [id, tasks]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,8 +35,8 @@ function CreateTask({ setTasks }) {
     setError(null);
     
     try {
-      const response = await fetch('http://localhost:8080/api/tasks', {
-        method: 'POST',
+      const response = await fetch(`http://localhost:8080/api/tasks/${id}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -33,13 +50,17 @@ function CreateTask({ setTasks }) {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create task');
+        throw new Error('Failed to update task');
       }
 
-      const newTask = await response.json();
+      const updatedTask = await response.json();
       
-      // Update tasks state with the new task
-      setTasks(prevTasks => [...prevTasks, newTask]);
+      // Update tasks state with the updated task
+      setTasks(prevTasks => 
+        prevTasks.map(task => 
+          task.id === updatedTask.id ? updatedTask : task
+        )
+      );
       
       // Redirect to home page
       navigate('/');
@@ -50,9 +71,13 @@ function CreateTask({ setTasks }) {
     }
   };
 
+  if (notFound) {
+    return <div className="alert alert-warning mt-4">Task not found</div>;
+  }
+
   return (
     <div className="mt-4">
-      <h2>Create New Task</h2>
+      <h2>Edit Task</h2>
       
       {error && <div className="alert alert-danger">{error}</div>}
       
@@ -116,11 +141,11 @@ function CreateTask({ setTasks }) {
         </div>
         
         <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
-          {isSubmitting ? 'Creating...' : 'Create Task'}
+          {isSubmitting ? 'Saving...' : 'Save Changes'}
         </button>
       </form>
     </div>
   );
 }
 
-export default CreateTask;
+export default EditTask;
