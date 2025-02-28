@@ -5,8 +5,15 @@ A full-stack task management application with CRUD operations and email notifica
 ## Features
 
 - Create, read, update, and delete tasks
+- Create, read, update, and delete users
 - Email notifications for overdue tasks
 - Responsive user interface
+- Task prioritization (High, Medium, Low)
+- Task categorization
+- Due date tracking with calendar integration
+- User role management (Admin, Manager, User)
+- Dashboard with task statistics and analytics
+- Bulk operations for multiple tasks
 
 ## Tech Stack
 
@@ -14,6 +21,16 @@ A full-stack task management application with CRUD operations and email notifica
 - **Backend**: Java (Spring Boot)
 - **Database**: MySQL
 - **Containerization**: Docker
+
+## Architecture
+
+The application follows a standard three-tier architecture:
+
+1. **Presentation Layer**: React.js frontend with component-based UI
+2. **Application Layer**: Spring Boot REST API with business logic
+3. **Data Layer**: MySQL database for persistent storage
+
+Communication between layers is handled via RESTful APIs, with JWT for authentication and authorization.
 
 ## Project Structure
 
@@ -78,13 +95,33 @@ You can customize the ports for each service by modifying the variables in the `
 
 ## API Endpoints
 
+### Task Management
+
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET    | /api/tasks | Get all tasks |
+| GET    | /api/tasks | Get all tasks (supports pagination with ?page=0&size=10) |
 | GET    | /api/tasks/{id} | Get task by ID |
+| GET    | /api/tasks/user/{userId} | Get all tasks for a specific user |
+| GET    | /api/tasks/category/{category} | Get tasks by category |
+| GET    | /api/tasks/priority/{priority} | Get tasks by priority level |
+| GET    | /api/tasks/overdue | Get all overdue tasks |
 | POST   | /api/tasks | Create a new task |
 | PUT    | /api/tasks/{id} | Update an existing task |
 | DELETE | /api/tasks/{id} | Delete a task |
+| PATCH  | /api/tasks/{id}/status | Update task status |
+| POST   | /api/tasks/bulk | Perform bulk operations on tasks |
+
+### User Management
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET    | /api/users | Get all users (admin only) |
+| GET    | /api/users/{id} | Get user by ID |
+| POST   | /api/users | Create a new user |
+| PUT    | /api/users/{id} | Update an existing user |
+| DELETE | /api/users/{id} | Delete a user |
+| POST   | /api/auth/login | User login |
+| POST   | /api/auth/register | User registration |
 
 ## Development
 
@@ -110,3 +147,52 @@ cd backend
 ## Email Notifications
 
 The system automatically checks for overdue tasks and sends email notifications to users. This is handled by a scheduled job in the backend.
+
+### Email Configuration
+
+Email notifications use SMTP and can be configured in the application properties:
+
+```properties
+spring.mail.host=smtp.example.com
+spring.mail.port=587
+spring.mail.username=your-email@example.com
+spring.mail.password=your-password
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+```
+
+### Notification Types
+
+1. **Overdue Task Notifications**: Sent daily to users with overdue tasks
+2. **Upcoming Due Date Reminder**: Sent 2 days before the task due date
+3. **Task Assignment Notification**: Sent when a task is assigned to a user
+4. **Task Status Change**: Sent when a task status changes
+
+## Testing
+
+### Frontend Testing
+
+The frontend uses Jest and React Testing Library for unit and component testing:
+
+```bash
+cd frontend
+npm test
+```
+
+### Backend Testing
+
+The backend uses JUnit and Mockito for unit and integration testing:
+
+```bash
+cd backend
+./mvnw test
+```
+
+### End-to-End Testing
+
+E2E testing is implemented using Cypress:
+
+```bash
+cd frontend
+npm run cypress:open
+```
