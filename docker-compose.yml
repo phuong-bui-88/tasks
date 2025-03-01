@@ -36,8 +36,16 @@ services:
       SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: true
     ports:
       - "${BACKEND_PORT}:8080"
+      - "5005:5005"  # Debug port
     networks:
       - tasks-network
+    # Debug-friendly healthcheck
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
 
   frontend:
     build:
