@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { registerUser } from '../utils/api';
 import './RegisterPage.css';
 
@@ -7,8 +7,7 @@ function RegisterPage({ onRegister, onCancel, error }) {
         username: '',
         password: '',
         confirmPassword: '',
-        email: '',
-        fullName: ''
+        email: ''
     });
 
     const [validationErrors, setValidationErrors] = useState({});
@@ -85,25 +84,6 @@ function RegisterPage({ onRegister, onCancel, error }) {
                 )}
 
                 <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label htmlFor="fullName">Full Name</label>
-                        <div className="input-icon-wrapper">
-                            <i className="icon icon-user"></i>
-                            <input
-                                type="text"
-                                id="fullName"
-                                name="fullName"
-                                placeholder="Full Name"
-                                value={userData.fullName}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                        {validationErrors.fullName && (
-                            <div className="validation-error">{validationErrors.fullName}</div>
-                        )}
-                    </div>
-
                     <div className="form-group">
                         <label htmlFor="email">Email</label>
                         <div className="input-icon-wrapper">

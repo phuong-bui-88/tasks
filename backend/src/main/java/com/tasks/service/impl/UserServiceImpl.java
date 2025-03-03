@@ -1,5 +1,14 @@
 package com.tasks.service.impl;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import com.tasks.dto.AuthResponse;
 import com.tasks.dto.RegistrationRequest;
 import com.tasks.dto.UserCreateDTO;
@@ -7,25 +16,85 @@ import com.tasks.dto.UserDTO;
 import com.tasks.dto.UserUpdateDTO;
 import com.tasks.exception.ResourceAlreadyExistsException;
 import com.tasks.exception.ResourceNotFoundException;
+import com.tasks.model.Role;
 import com.tasks.model.User;
+import com.tasks.repository.RoleRepository;
 import com.tasks.repository.UserRepository;
 import com.tasks.service.JwtService;
 import com.tasks.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
 
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+
+    @Autowired
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+    }
+
     @Override
     public AuthResponse registerUser(RegistrationRequest registrationRequest) {
-        // Implementation for registering a user
-        return null;
+        // Check if username exists
+        if (userRepository.existsByUsername(registrationRequest.getUsername())) {
+            return AuthResponse.builder()
+                    .success(false)
+                    .message("Username is already taken")
+                    .build();
+        }
+        
+        // Check if email exists
+        if (userRepository.existsByEmail(registrationRequest.getEmail())) {
+            return AuthResponse.builder()
+                    .success(false)
+                    .message("Email is already in use")
+                    .build();
+        }
+        
+        // Create new user
+        User user = new User();
+        user.setUsername(registrationRequest.getUsername());
+        user.setEmail(registrationRequest.getEmail());
+        user.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
+        
+        // Set default role - USER
+        if (user.getRoles() == null || user.getRoles().isEmpty()) {
+            Role userRole = roleRepository.findByName("ROLE_USER")
+                    .orElseThrow(() -> new ResourceNotFoundException("Default role not found"));
+            user.setRole(userRole);
+        }
+        
+        // Set created timestamp and active status
+        user.setCreatedAt(LocalDateTime.now());
+        user.setActive(true);
+        
+        // Save user to database
+        User savedUser = userRepository.save(user);
+        
+        // Generate JWT token
+        String token = jwtService.generateToken(savedUser.getUsername());
+        
+        // Convert role string to a set for AuthResponse
+        Set<String> roles = savedUser.getRoles().stream()
+                .map(Role::getName)
+                .collect(Collectors.toSet());
+        
+        // Return AuthResponse
+        return AuthResponse.builder()
+                .success(true)
+                .message("User registered successfully")
+                .token(token)
+                .userId(savedUser.getId())
+                .username(savedUser.getUsername())
+                .email(savedUser.getEmail())
+                .roles(roles)
+                .build();
     }
 
     @Override
@@ -44,17 +113,6 @@ public class UserServiceImpl implements UserService {
     public boolean existsByUsername(String username) {
         // Implementation for checking if a username exists
         return false;
-    }
-
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
-
-    @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
     }
 
     @Override
@@ -87,12 +145,16 @@ public class UserServiceImpl implements UserService {
         user.setUsername(userCreateDto.getUsername());
         user.setEmail(userCreateDto.getEmail());
         user.setPassword(passwordEncoder.encode(userCreateDto.getPassword()));
-        user.setFirstName(userCreateDto.getFirstName());
-        user.setLastName(userCreateDto.getLastName());
         
-        // Set role if provided, otherwise default is USER from entity definition
+        // Set role if provided, otherwise ensure default is set
         if (userCreateDto.getRole() != null && !userCreateDto.getRole().isEmpty()) {
-            user.setRole(userCreateDto.getRole());
+            Role userRole = roleRepository.findByName(userCreateDto.getRole())
+                    .orElseThrow(() -> new ResourceNotFoundException("Default role not found"));
+            user.setRole(userRole);
+        } else {
+            Role defaultRole = roleRepository.findByName("ROLE_USER")
+                    .orElseThrow(() -> new ResourceNotFoundException("Default role not found"));
+            user.setRole(defaultRole);
         }
         
         user.setCreatedAt(LocalDateTime.now());
@@ -134,17 +196,10 @@ public class UserServiceImpl implements UserService {
             user.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
         }
         
-        // Update other fields if provided
-        if (userUpdateDto.getFirstName() != null) {
-            user.setFirstName(userUpdateDto.getFirstName());
-        }
-        
-        if (userUpdateDto.getLastName() != null) {
-            user.setLastName(userUpdateDto.getLastName());
-        }
-        
         if (userUpdateDto.getRole() != null) {
-            user.setRole(userUpdateDto.getRole());
+            Role userRole = roleRepository.findByName(userUpdateDto.getRole())
+                    .orElseThrow(() -> new ResourceNotFoundException("Role not found: " + userUpdateDto.getRole()));
+            user.setRole(userRole);
         }
         
         if (userUpdateDto.getActive() != null) {
@@ -183,15 +238,16 @@ public class UserServiceImpl implements UserService {
     }
 
     private UserDTO convertToDto(User user) {
-        UserDTO UserDTO = new UserDTO();
-        UserDTO.setId(user.getId());
-        UserDTO.setUsername(user.getUsername());
-        UserDTO.setEmail(user.getEmail());
-        UserDTO.setFirstName(user.getFirstName());
-        UserDTO.setLastName(user.getLastName());
-        UserDTO.setRole(user.getRole());
-        UserDTO.setCreatedAt(user.getCreatedAt());
-        UserDTO.setActive(user.isActive());
-        return UserDTO;
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(user.getId());
+        userDTO.setUsername(user.getUsername());
+        userDTO.setEmail(user.getEmail());
+        Set<String> roleNames = user.getRoles().stream()
+            .map(Role::getName)
+            .collect(Collectors.toSet());
+        userDTO.setRoles(roleNames);
+        userDTO.setCreatedAt(user.getCreatedAt());
+        userDTO.setActive(user.isActive());
+        return userDTO;
     }
 }

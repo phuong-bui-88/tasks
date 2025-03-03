@@ -1,10 +1,11 @@
 package com.tasks.repository;
 
-import com.tasks.model.User;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import com.tasks.model.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -13,3 +14,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByUsername(String username);
     boolean existsByEmail(String email);
 }
+

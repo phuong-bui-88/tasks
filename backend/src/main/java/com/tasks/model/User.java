@@ -1,14 +1,25 @@
 package com.tasks.model;
 
-import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Data
 @Builder
@@ -31,18 +42,16 @@ public class User {
     @Column(nullable = false)
     private String password;
     
-    @Column(nullable = false)
-    private String firstName;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "user_roles",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    @Builder.Default
+    private Set<Role> roles = new HashSet<>();
     
-    @Column(nullable = false)
-    private String lastName;
-    
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "role")
-    private Set<String> roles = new HashSet<>();
-    
-    private boolean active;
+    private boolean active = true;
     
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -60,30 +69,11 @@ public class User {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
-
-    public String getFullName() {
-        return firstName + " " + lastName;
-    }
     
-    public void setFullName(String fullName) {
-        if (fullName != null && fullName.contains(" ")) {
-            String[] names = fullName.split(" ", 2);
-            this.firstName = names[0];
-            this.lastName = names[1];
-        } else {
-            this.firstName = fullName;
-            this.lastName = "";
-        }
-    }
-    
-    public void setRole(String role) {
+    public void setRole(Role role) {
         if (this.roles == null) {
             this.roles = new HashSet<>();
         }
         this.roles.add(role);
     }
-
-    public String getRole() {
-        return roles.iterator().next();
-    }    
 }
