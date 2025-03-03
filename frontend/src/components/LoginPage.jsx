@@ -30,34 +30,8 @@ function LoginPage({ onLogin }) {
     };
 
     const handleRegister = (userData) => {
-        // Call the backend API to register the user
-        fetch('/api/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(userData)
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Registration failed');
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Log the user in automatically after successful registration
-                const loginSuccessful = onLogin({
-                    username: userData.username,
-                    password: userData.password
-                });
-
-                if (!loginSuccessful) {
-                    setError('Automatic login after registration failed');
-                }
-            })
-            .catch(error => {
-                setError(error.message || 'Registration failed');
-            });
+        console.log('User registered:', userData);
+        // 
     };
 
     if (isRegistering) {
