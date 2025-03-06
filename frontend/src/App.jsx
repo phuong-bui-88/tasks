@@ -40,6 +40,8 @@ function App() {
                     <AppRoutes
                         isLoggedIn={isLoggedIn}
                         setIsLoggedIn={setIsLoggedIn}
+                        handleLogin={handleLogin}
+                        handleLogout={handleLogout}
                     />
                 </main>
             </div>
