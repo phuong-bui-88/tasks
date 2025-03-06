@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import Dashboard from './components/Dashboard';
-import LoginPage from './components/LoginPage';
+import Login from './components/auth/Login';
 
 function App() {
     const [tasks, setTasks] = useState([]);
@@ -43,10 +43,17 @@ function App() {
                             path="/"
                             element={isLoggedIn ? <Dashboard tasks={tasks} setTasks={setTasks} /> : <Navigate to="/login" />}
                         />
+
+                        <Route
+                            path="/dashboard"
+                            element={isLoggedIn ? <Dashboard tasks={tasks} setTasks={setTasks} /> : <Navigate to="/login" />}
+                        />
+
                         <Route
                             path="/login"
-                            element={!isLoggedIn ? <LoginPage onLogin={handleLogin} /> : <Navigate to="/" />}
+                            element={<Login setIsLoggedIn={setIsLoggedIn} />}
                         />
+
                     </Routes>
                 </main>
             </div>

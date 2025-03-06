@@ -102,18 +102,12 @@ function Login({ setIsLoggedIn }) {
         }
     };
 
-    const goToDashboard = () => {
-        console.log('Redirecting to dashboard...');
-        navigate('/dashboard');
-    };
-
     return (
         <div className="auth-container">
             <div className="auth-form login-form">
                 <div className="auth-header">
                     <h2>Welcome Back</h2>
                     <p>Sign in to your account to continue</p>
-                    <button onClick={goToDashboard}>Go to Dashboard</button>
                 </div>
 
                 {successMessage && (
