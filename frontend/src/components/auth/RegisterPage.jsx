@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { registerUser } from '../utils/api';
+import { useNavigate } from 'react-router-dom';
+import registerWithAutoLogin from '../../services/authService';
 import './RegisterPage.css';
 
 function RegisterPage({ onRegister, onCancel, error }) {
@@ -13,6 +14,9 @@ function RegisterPage({ onRegister, onCancel, error }) {
     const [validationErrors, setValidationErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false);
     const [registrationError, setRegistrationError] = useState('');
+
+    // Add navigate hook for redirection
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -49,6 +53,7 @@ function RegisterPage({ onRegister, onCancel, error }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log('Form submitted:');
 
         if (validateForm()) {
             setIsLoading(true);
@@ -58,11 +63,22 @@ function RegisterPage({ onRegister, onCancel, error }) {
                 // Remove confirmPassword before sending to backend
                 const { confirmPassword, ...registrationData } = userData;
 
-                // Call the API to register user
-                const result = await registerUser(registrationData);
+                // Use the new service to register and auto-login
+                const result = await registerWithAutoLogin.register(registrationData);
 
-                // Call parent component's onRegister with the result
-                onRegister(result);
+                if (result.success) {
+                    // Registration and auto-login successful
+                    // Notify parent component if needed
+                    if (onRegister) {
+                        onRegister(result);
+                    }
+
+                    // Redirect to tasks page
+                    navigate('/tasks');
+                } else {
+                    // Handle registration failure
+                    setRegistrationError(result.error || 'Registration failed. Please try again.');
+                }
             } catch (error) {
                 setRegistrationError(error.message || 'Registration failed. Please try again.');
             } finally {

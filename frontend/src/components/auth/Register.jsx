@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { TextField, Button, Typography, Container, Box, Alert, Paper, Grid } from '@mui/material';
-import { authService } from '../../services/authService';
+import authService from '../../services/authService';
 import { validateEmail, validatePassword } from '../../utils/validation';
 
 const Register = () => {

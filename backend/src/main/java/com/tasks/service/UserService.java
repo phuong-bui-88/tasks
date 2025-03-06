@@ -5,6 +5,7 @@ import com.tasks.dto.UserCreateDTO;
 import com.tasks.dto.UserUpdateDTO;
 import com.tasks.dto.RegistrationRequest;
 import com.tasks.dto.AuthResponse;
+import com.tasks.dto.LoginRequest;
 
 import java.util.List;
 
@@ -22,4 +23,20 @@ public interface UserService {
     UserDTO getUserByUsername(String username);
     UserDTO getUserByEmail(String email);
     boolean existsByEmail(String email);
+
+
+    /**
+     * Authenticates a user with the provided credentials
+     *
+     * @param loginRequest the login credentials
+     * @return AuthResponse containing authentication result and token if successful
+     */
+    AuthResponse loginUser(LoginRequest loginRequest);
+
+    /**
+     * Logs out the currently authenticated user
+     *
+     * @return AuthResponse indicating the result of the logout operation
+     */
+    AuthResponse logoutUser();
 }

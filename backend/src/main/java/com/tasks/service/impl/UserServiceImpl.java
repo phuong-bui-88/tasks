@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.tasks.dto.AuthResponse;
+import com.tasks.dto.LoginRequest;
 import com.tasks.dto.RegistrationRequest;
 import com.tasks.dto.UserCreateDTO;
 import com.tasks.dto.UserDTO;
@@ -94,6 +95,61 @@ public class UserServiceImpl implements UserService {
                 .username(savedUser.getUsername())
                 .email(savedUser.getEmail())
                 .roles(roles)
+                .build();
+    }
+
+    @Override
+    public AuthResponse loginUser(LoginRequest loginRequest) {
+        System.out.println("Login request: " + loginRequest.getUsername() + ", " + loginRequest.getPassword());
+        // Updated to search by either username or email
+        User user = userRepository.findByUsernameOrEmail(
+                loginRequest.getUsername(), 
+                loginRequest.getUsername())
+                .orElse(null);
+        
+        // If user doesn't exist or password doesn't match
+        if (user == null || !passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            return AuthResponse.builder()
+                    .success(false)
+                    .message("Invalid username/email or password")
+                    .build();
+        }
+        
+        // Check if user account is active
+        if (!user.isActive()) {
+            return AuthResponse.builder()
+                    .success(false)
+                    .message("Account is disabled")
+                    .build();
+        }
+        
+        // Generate JWT token
+        String token = jwtService.generateToken(user.getUsername());
+        
+        // Convert role set to string set for AuthResponse
+        Set<String> roles = user.getRoles().stream()
+                .map(Role::getName)
+                .collect(Collectors.toSet());
+        
+        // Return AuthResponse
+        return AuthResponse.builder()
+                .success(true)
+                .message("Login successful")
+                .token(token)
+                .userId(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .roles(roles)
+                .build();
+    }
+
+    @Override
+    public AuthResponse logoutUser() {
+        // Invalidate the JWT token (implementation depends on your JWT strategy)
+        // For example, you might want to add the token to a blacklist
+        return AuthResponse.builder()
+                .success(true)
+                .message("Logout successful")
                 .build();
     }
 

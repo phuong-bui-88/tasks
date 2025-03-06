@@ -64,9 +64,11 @@ services:
       NODE_ENV: development
       CHOKIDAR_USEPOLLING: "true"
       VITE_PORT: ${FRONTEND_PORT}
-    user: "node"  # Use the node user instead of root
+    # Use the node user instead of root
     networks:
       - tasks-network
+    command: ["sh", "-c", "chown -R node:node /app/node_modules && npm start"]
+    user: "root"
 
 networks:
   tasks-network:

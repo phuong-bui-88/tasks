@@ -39,6 +39,7 @@ public class TaskController {
     
     @GetMapping("/status/{status}")
     public ResponseEntity<List<TaskDTO>> getTasksByStatus(@PathVariable Task.TaskStatus status) {
+        
         return ResponseEntity.ok(taskService.getTasksByStatus(status));
     }
     

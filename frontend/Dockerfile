@@ -9,7 +9,11 @@ RUN apk add --no-cache curl
 COPY package*.json ./
 RUN npm install
 
+# Install @mui/material
+RUN npm install @mui/material
+
 RUN chown -R node:node /app/node_modules
+
 
 # Copy the rest of the application
 COPY . .
