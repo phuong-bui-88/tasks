@@ -1,5 +1,5 @@
 import React from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import Login from "../components/auth/Login";
 import Register from "../components/auth/Register";
 import Dashboard from "../components/Dashboard";
@@ -7,21 +7,11 @@ import NotFound from "../components/NotFound";
 import CreateTask from "../components/tasks/CreateTask";
 import EditTask from "../components/tasks/EditTask";
 import TasksList from "../components/tasks/TasksList";
-import UserForm from "../components/users/UserForm";
-import UserList from "../components/users/UserList";
+// import UserForm from "../components/users/UserForm";
+// import UserList from "../components/users/UserList";
 import ProtectedRoute from "./ProtectedRoute";
 
-interface AppRoutesProps {
-  isLoggedIn: boolean;
-  setIsLoggedIn: (isLoggedIn: boolean) => void;
-  handleLogin?: (credentials: {
-    username: string;
-    password: string;
-  }) => boolean;
-  handleLogout?: () => void;
-}
-
-const AppRoutes: React.FC<AppRoutesProps> = ({
+const AppRoutes = ({
   isLoggedIn,
   setIsLoggedIn,
   handleLogin,
@@ -32,7 +22,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
       <Route
         path="/login"
         element={
-          <Login setIsLoggedIn={setIsLoggedIn} handleLogin={handleLogin} />
+          <Login setIsLoggedIn={setIsLoggedIn} />
         }
       />
       <Route path="/register" element={<Register />} />
@@ -41,19 +31,19 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
         element={<LogoutHandler handleLogout={handleLogout} />}
       />
 
-      <Route element={<ProtectedRoute isLoggedIn={isLoggedIn} />}>
+      <Route element={<ProtectedRoute isLoggedIn={isLoggedIn}><Outlet /></ProtectedRoute>}>
         <Route path="/" element={<Navigate to="/dashboard" />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard" element={<Dashboard tasks={[]} setTasks={() => { }} />} />
 
         {/* Task Routes */}
-        <Route path="/tasks" element={<TasksList />} />
-        <Route path="/tasks/new" element={<CreateTask />} />
-        <Route path="/tasks/edit/:id" element={<EditTask />} />
+        <Route path="/tasks" element={<TasksList tasks={[]} />} />
+        <Route path="/tasks/new" element={<CreateTask setTasks={() => { }} />} />
+        <Route path="/tasks/edit/:id" element={<EditTask tasks={[]} setTasks={() => { }} />} />
 
         {/* User Routes */}
-        <Route path="/users" element={<UserList />} />
+        {/* <Route path="/users" element={<UserList />} />
         <Route path="/users/new" element={<UserForm />} />
-        <Route path="/users/edit/:id" element={<UserForm editMode={true} />} />
+        <Route path="/users/edit/:id" element={<UserForm editMode={true} />} /> */}
       </Route>
 
       <Route path="*" element={<NotFound />} />
@@ -62,9 +52,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({
 };
 
 // Simple LogoutHandler component to handle logout and redirect
-const LogoutHandler: React.FC<{ handleLogout?: () => void }> = ({
-  handleLogout,
-}) => {
+const LogoutHandler = ({ handleLogout }) => {
   React.useEffect(() => {
     if (handleLogout) {
       handleLogout();

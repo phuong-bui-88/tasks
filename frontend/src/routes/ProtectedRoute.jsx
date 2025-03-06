@@ -1,17 +1,12 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 
-interface ProtectedRouteProps {
-    isLoggedIn: boolean;
-    children: React.ReactNode;
-}
-
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ isLoggedIn, children }) => {
+const ProtectedRoute = ({ isLoggedIn, children }) => {
     if (!isLoggedIn) {
         return <Navigate to="/login" />;
     }
 
-    return <>{children}</>;
+    return children;
 };
 
 export default ProtectedRoute;
