@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter } from 'react-router-dom';
+import UserProfileDropdown from './components/UserProfileDropdown';
 import AppRoutes from './routes/AppRoutes';
 
 function App() {
@@ -34,7 +35,7 @@ function App() {
             <div className="app">
                 <header className="app-header">
                     <h1>Task Management App</h1>
-                    {isLoggedIn && <button onClick={handleLogout}>Logout</button>}
+                    {isLoggedIn && <UserProfileDropdown handleLogout={handleLogout} />}
                 </header>
                 <main>
                     <AppRoutes

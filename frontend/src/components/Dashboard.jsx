@@ -1,8 +1,5 @@
 import React from 'react';
-// import './Dashboard.css';
-import { useNavigate } from 'react-router-dom';
-import authService from '../services/authService';
-
+import './Dashboard.css'; // Uncomment this as we'll create this file
 
 function Dashboard({ tasks, setTasks }) {
     const handleAddTask = (newTask) => {
@@ -19,23 +16,43 @@ function Dashboard({ tasks, setTasks }) {
     };
 
     return (
-        <div className="dashboard">
-            <p>Welcome to your task management application!</p>
-            {/* Task management functionality will go here */}
-            <form onSubmit={handleTaskSubmit}>
-                <input type="text" name="taskTitle" placeholder="New task title" required />
-                <button type="submit">Add Task</button>
-            </form>
-            <div className="task-list">
-                {tasks.length === 0 ? (
-                    <p>No tasks yet. Add your first task!</p>
-                ) : (
-                    <ul>
-                        {tasks.map((task, index) => (
-                            <li key={index}>{task.title}</li>
-                        ))}
-                    </ul>
-                )}
+        <div className="dashboard-container">
+            <header className="dashboard-header">
+                <h1>Task Dashboard</h1>
+            </header>
+
+            <div className="dashboard-content">
+                <div className="welcome-section">
+                    <h2>Welcome to your task management application!</h2>
+                    <p>Manage your tasks efficiently and stay organized.</p>
+                </div>
+
+                <div className="task-manager">
+                    <h3>Add New Task</h3>
+                    <form onSubmit={handleTaskSubmit} className="task-form">
+                        <input
+                            type="text"
+                            name="taskTitle"
+                            placeholder="New task title"
+                            required
+                            className="task-input"
+                        />
+                        <button type="submit" className="add-button">Add Task</button>
+                    </form>
+
+                    <div className="task-list-container">
+                        <h3>Your Tasks</h3>
+                        {tasks.length === 0 ? (
+                            <p className="empty-task-message">No tasks yet. Add your first task!</p>
+                        ) : (
+                            <ul className="task-list">
+                                {tasks.map((task, index) => (
+                                    <li key={index} className="task-item">{task.title}</li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
+                </div>
             </div>
         </div>
     );
