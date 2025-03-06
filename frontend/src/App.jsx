@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
-import Dashboard from './components/Dashboard';
-import Login from './components/auth/Login';
+import { BrowserRouter } from 'react-router-dom';
+import AppRoutes from './routes/AppRoutes';
 
 function App() {
     const [tasks, setTasks] = useState([]);
@@ -38,23 +37,10 @@ function App() {
                     {isLoggedIn && <button onClick={handleLogout}>Logout</button>}
                 </header>
                 <main>
-                    <Routes>
-                        <Route
-                            path="/"
-                            element={isLoggedIn ? <Dashboard tasks={tasks} setTasks={setTasks} /> : <Navigate to="/login" />}
-                        />
-
-                        <Route
-                            path="/dashboard"
-                            element={isLoggedIn ? <Dashboard tasks={tasks} setTasks={setTasks} /> : <Navigate to="/login" />}
-                        />
-
-                        <Route
-                            path="/login"
-                            element={<Login setIsLoggedIn={setIsLoggedIn} />}
-                        />
-
-                    </Routes>
+                    <AppRoutes
+                        isLoggedIn={isLoggedIn}
+                        setIsLoggedIn={setIsLoggedIn}
+                    />
                 </main>
             </div>
         </BrowserRouter>
