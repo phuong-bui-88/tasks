@@ -1,0 +1,111 @@
+.profile-dropdown {
+  position: relative;
+  display: inline-block;
+  width: 200px; /* Set a fixed width for the entire dropdown component */
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.profile-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Space elements evenly */
+  cursor: pointer;
+  padding: 10px 12px;
+  border-radius: 6px;
+  width: 100%; /* Take full width of parent */
+  box-sizing: border-box;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  transition: all 0.2s ease;
+}
+
+.profile-trigger:hover {
+  background-color: #e9ecef;
+  border-color: #dee2e6;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+  flex-shrink: 0; /* Prevent avatar from shrinking */
+}
+
+.profile-name {
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-grow: 1; /* Allow name to take available space */
+  color: #343a40;
+}
+
+.dropdown-arrow {
+  margin-left: 8px;
+  font-size: 10px;
+  transition: transform 0.3s ease;
+  flex-shrink: 0; /* Prevent arrow from shrinking */
+  color: #6c757d;
+}
+
+.dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 5px);
+  right: 0;
+  background-color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+  min-width: 100%;
+  width: 100%;
+  z-index: 1000;
+  box-sizing: border-box;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  animation: dropdownFade 0.2s ease;
+}
+
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-item {
+  padding: 12px 15px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  color: #495057;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+  color: #212529;
+}
+
+.dropdown-icon {
+  margin-right: 10px;
+  font-size: 16px;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background-color: #e9ecef;
+  margin: 4px 0;
+}

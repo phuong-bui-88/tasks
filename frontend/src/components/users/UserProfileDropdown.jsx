@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './UserProfileDropdown.css';
 
-function UserProfileDropdown({ handleLogout }) {
+function UserProfileDropdown({ handleLogout, userName = "User" }) {
     const [isOpen, setIsOpen] = useState(false);
     const navigate = useNavigate();
     const dropdownRef = useRef(null);
@@ -38,19 +38,20 @@ function UserProfileDropdown({ handleLogout }) {
     return (
         <div className="profile-dropdown" ref={dropdownRef}>
             <div className="profile-trigger" onClick={toggleDropdown}>
-                <div className="user-avatar">
-                    <span>👤</span>
-                </div>
-                <span className="profile-name">My Profile</span>
+                <span className="profile-name">{userName}</span>
+                <span className={`dropdown-arrow ${isOpen ? 'open' : ''}`}>▼</span>
             </div>
 
             {isOpen && (
                 <div className="dropdown-menu">
                     <div className="dropdown-item" onClick={handleProfileClick}>
-                        Profile Settings
+                        <span className="dropdown-icon">👤</span>
+                        <span>Profile Settings</span>
                     </div>
+                    <div className="dropdown-divider"></div>
                     <div className="dropdown-item" onClick={onLogout}>
-                        Logout
+                        <span className="dropdown-icon">🚪</span>
+                        <span>Logout</span>
                     </div>
                 </div>
             )}

@@ -71,6 +71,7 @@ function Login({ setIsLoggedIn }) {
 
             // Store the JWT token in localStorage
             localStorage.setItem('token', response.token);
+            localStorage.setItem('isLoggedIn', 'true');
             localStorage.setItem('user', JSON.stringify({
                 id: response.id,
                 username: response.username,
