@@ -10,6 +10,7 @@ import TasksList from "../components/tasks/TasksList";
 // import UserForm from "../components/users/UserForm";
 // import UserList from "../components/users/UserList";
 import ProtectedRoute from "./ProtectedRoute";
+import PublicRoute from "./PublicRoute";
 
 const AppRoutes = ({
   isLoggedIn,
@@ -19,18 +20,16 @@ const AppRoutes = ({
 }) => {
   return (
     <Routes>
-      <Route
-        path="/login"
-        element={
-          <Login setIsLoggedIn={setIsLoggedIn} />
-        }
-      />
-      <Route path="/register" element={<Register />} />
-      <Route
-        path="/logout"
-        element={<LogoutHandler handleLogout={handleLogout} />}
-      />
+      {/* Public Routes - Only accessible when NOT logged in */}
+      <Route element={<PublicRoute isLoggedIn={isLoggedIn}><Outlet /></PublicRoute>}>
+        <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} handleLogin={handleLogin} />} />
+        <Route path="/register" element={<Register />} />
+      </Route>
 
+      {/* Logout route - accessible to everyone */}
+      <Route path="/logout" element={<LogoutHandler handleLogout={handleLogout} />} />
+
+      {/* Protected Routes - Only accessible when logged in */}
       <Route element={<ProtectedRoute isLoggedIn={isLoggedIn}><Outlet /></ProtectedRoute>}>
         <Route path="/" element={<Navigate to="/dashboard" />} />
         <Route path="/dashboard" element={<Dashboard tasks={[]} setTasks={() => { }} />} />
