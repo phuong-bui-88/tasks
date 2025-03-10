@@ -7,22 +7,22 @@ import NotFound from "../components/NotFound";
 import CreateTask from "../components/tasks/CreateTask";
 import EditTask from "../components/tasks/EditTask";
 import TasksList from "../components/tasks/TasksList";
+import ProfilePage from "../components/users/ProfilePage";
 // import UserForm from "../components/users/UserForm";
 // import UserList from "../components/users/UserList";
+import { useUser } from "../contexts/UserContext";
 import ProtectedRoute from "./ProtectedRoute";
 import PublicRoute from "./PublicRoute";
 
-const AppRoutes = ({
-  isLoggedIn,
-  setIsLoggedIn,
-  handleLogin,
-  handleLogout,
-}) => {
+const AppRoutes = () => {
+  // Get values from UserContext instead of props
+  const { isLoggedIn, userData, handleLogout, updateUserProfile } = useUser();
+
   return (
     <Routes>
       {/* Public Routes - Only accessible when NOT logged in */}
       <Route element={<PublicRoute isLoggedIn={isLoggedIn}><Outlet /></PublicRoute>}>
-        <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} handleLogin={handleLogin} />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
       </Route>
 
@@ -38,6 +38,17 @@ const AppRoutes = ({
         <Route path="/tasks" element={<TasksList tasks={[]} />} />
         <Route path="/tasks/new" element={<CreateTask setTasks={() => { }} />} />
         <Route path="/tasks/edit/:id" element={<EditTask tasks={[]} setTasks={() => { }} />} />
+
+        {/* Profile Page Route */}
+        <Route
+          path="/profile"
+          element={
+            <ProfilePage
+              userData={userData}
+              updateUserProfile={updateUserProfile}
+            />
+          }
+        />
 
         {/* User Routes */}
         {/* <Route path="/users" element={<UserList />} />

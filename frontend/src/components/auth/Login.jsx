@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useUser } from '../../contexts/UserContext';
 import authService from '../../services/authService';
 import './Auth.css';
 
-function Login({ setIsLoggedIn }) {
+function Login() {
     const [credentials, setCredentials] = useState({
         username: '',
         password: ''
@@ -12,6 +13,7 @@ function Login({ setIsLoggedIn }) {
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
+    const { handleLogin } = useUser();  // Use the login function from UserContext
 
     // Check if there was a success message passed from registration
     const successMessage = location.state?.message;
@@ -73,7 +75,7 @@ function Login({ setIsLoggedIn }) {
             localStorage.setItem('token', response.token);
             localStorage.setItem('isLoggedIn', 'true');
             localStorage.setItem('user', JSON.stringify({
-                id: response.id,
+                id: response.userId,
                 username: response.username,
                 email: response.email,
                 roles: response.roles
@@ -81,11 +83,24 @@ function Login({ setIsLoggedIn }) {
 
             console.log('Login successful, updating auth state...');
 
-            // Update the authentication state in parent component
-            setIsLoggedIn(true);
+            // Update the authentication state using context
+            // Make sure we're passing what the handleLogin function expects
+            const success = handleLogin({
+                username: response.username,
+                password: credentials.password, // Send the password from credentials
+                // Include additional user data from response
+                userId: response.userId,
+                email: response.email,
+                roles: response.roles,
+                token: response.token
+            });
 
-            // Directly navigate to the dashboard after successful login
-            navigate('/dashboard');
+            if (success) {
+                // Directly navigate to the dashboard after successful login
+                navigate('/dashboard');
+            } else {
+                setError('Login failed. Please try again.');
+            }
 
         } catch (error) {
             console.error('Login error:', error);

@@ -189,3 +189,116 @@ curl -X POST http://localhost:8080/api/auth/login \
 - JWT tokens have a configurable expiration time
 - Sensitive operations require re-authentication
 - Session information is not stored server-side (stateless)
+
+## User Management Endpoints
+
+### Update User
+`PUT /api/users/{id}`
+
+Updates an existing user's information.
+
+#### Request
+
+```http
+PUT /api/users/{id}
+Content-Type: application/json
+Authorization: Bearer {token}
+
+{
+  "username": "string", (optional)
+  "firstName": "string", (optional)
+  "lastName": "string", (optional)
+  "email": "string", (optional)
+  "password": "string", (optional)
+  "role": "string" (optional)
+}
+```
+
+#### Response
+
+**Success (200 OK)**
+```json
+{
+  "id": "long",
+  "username": "string",
+  "email": "string",
+  "firstName": "string",
+  "lastName": "string",
+  "role": "string",
+  "updatedAt": "timestamp"
+}
+```
+
+**Failure (404 Not Found)**
+```json
+{
+  "timestamp": "timestamp",
+  "status": 404,
+  "error": "Not Found",
+  "message": "User with id {id} not found",
+  "path": "/api/users/{id}"
+}
+```
+
+**Failure (400 Bad Request)**
+```json
+{
+  "timestamp": "timestamp",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Email already in use",
+  "path": "/api/users/{id}"
+}
+```
+
+**Failure (403 Forbidden)**
+```json
+{
+  "timestamp": "timestamp",
+  "status": 403,
+  "error": "Forbidden",
+  "message": "You don't have permission to update this user",
+  "path": "/api/users/{id}"
+}
+```
+
+#### Implementation Details
+
+The update user endpoint is implemented in the `UserController` class and uses the `UserService` for business logic:
+
+1. Validates the user's permission to update the target user
+2. Validates the incoming update request
+3. If updating email/username, checks if it conflicts with existing users
+4. If updating password, encodes it using BCrypt
+5. Updates the User entity with provided fields
+6. Saves the updated user to the database
+7. Returns the updated user information
+
+#### Related Files
+
+- `UserController.java`: Controller that handles the HTTP request
+- `UserService.java`: Service that contains business logic for user management
+- `User.java`: Entity class representing a user
+- `UserRepository.java`: Repository for database operations
+- `UserUpdateDTO.java`: DTO for user update requests
+
+#### Sample cURL
+
+```bash
+curl -X PUT http://localhost:8080/api/users/1 \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -d '{
+    "firstName": "John",
+    "lastName": "Smith",
+    "email": "john.smith@example.com"
+  }'
+```
+
+#### Security Considerations
+
+- Authentication is required (valid JWT token)
+- Authorization is enforced (users can only update their own information unless they have ADMIN role)
+- Password changes trigger security notifications (email)
+- Input validation is performed for all fields
+- Changes to sensitive fields (email, role) may require additional verification
