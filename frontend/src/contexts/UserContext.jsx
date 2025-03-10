@@ -6,46 +6,54 @@ const UserContext = createContext(null);
 export const UserProvider = ({ children }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userData, setUserData] = useState({
+        id: '',
         username: 'User',
         email: ''
     });
+
+    // Function to get user data from localStorage and map it to userData format
+    const getUserFromStorage = () => {
+        try {
+            const storedData = localStorage.getItem('user');
+            if (storedData) {
+                const parsedData = JSON.parse(storedData);
+                return {
+                    id: parsedData.id || parsedData.userId || '',
+                    username: parsedData.username || 'User',
+                    email: parsedData.email || '',
+                    roles: parsedData.roles || []
+                };
+            }
+        } catch (error) {
+            console.error('Error retrieving user data:', error);
+        }
+        return { id: '', username: 'User', email: '', roles: [] };
+    };
 
     // Load user data from localStorage on initial render
     useEffect(() => {
         const loggedInStatus = localStorage.getItem('isLoggedIn');
         if (loggedInStatus === 'true') {
             setIsLoggedIn(true);
-
-            try {
-                const storedUserData = localStorage.getItem('user');
-                if (storedUserData) {
-                    const user = JSON.parse(storedUserData);
-                    setUserData({
-                        username: user.username || 'User',
-                        email: user.email || ''
-                    });
-                }
-            } catch (error) {
-                console.error('Error parsing user data:', error);
-            }
+            setUserData(getUserFromStorage());
         }
     }, []);
 
     // Handle login
     const handleLogin = (credentials) => {
         if (credentials.username && credentials.password) {
-            setIsLoggedIn(true);
-            setUserData(prev => ({
-                ...prev,
-                username: credentials.username
-            }));
-
-            // Store in localStorage
-            localStorage.setItem('isLoggedIn', 'true');
-            localStorage.setItem('user', JSON.stringify({
+            const newUserData = {
+                id: credentials.userId || credentials.id || '',
                 username: credentials.username,
-                email: userData.email
-            }));
+                email: credentials.email || '',
+                roles: credentials.roles || []
+            };
+
+            setIsLoggedIn(true);
+            setUserData(newUserData);
+
+            // Note: The localStorage is already set in the Login component
+            // We don't need to duplicate setting localStorage here
 
             return true;
         }
@@ -56,6 +64,7 @@ export const UserProvider = ({ children }) => {
     const handleLogout = () => {
         setIsLoggedIn(false);
         setUserData({
+            id: '',
             username: 'User',
             email: ''
         });
@@ -68,21 +77,18 @@ export const UserProvider = ({ children }) => {
 
     // Update user profile
     const updateUserProfile = (updatedData) => {
-        setUserData(prev => ({
-            ...prev,
-            username: updatedData.username || prev.username,
-            email: updatedData.email !== undefined ? updatedData.email : prev.email
-        }));
+        const newUserData = {
+            ...userData,
+            id: updatedData.id || updatedData.userId || userData.id,
+            username: updatedData.username || userData.username,
+            email: updatedData.email !== undefined ? updatedData.email : userData.email
+        };
+
+        setUserData(newUserData);
 
         // Update localStorage
         try {
-            const storedUserData = JSON.parse(localStorage.getItem('user')) || {};
-            const updatedUser = {
-                ...storedUserData,
-                username: updatedData.username || storedUserData.username || userData.username,
-                email: updatedData.email !== undefined ? updatedData.email : storedUserData.email || userData.email
-            };
-            localStorage.setItem('user', JSON.stringify(updatedUser));
+            localStorage.setItem('user', JSON.stringify(newUserData));
         } catch (error) {
             console.error('Error updating user data:', error);
         }
@@ -92,7 +98,7 @@ export const UserProvider = ({ children }) => {
     const value = {
         isLoggedIn,
         userData,
-        handleLogin,        // Keep the original name too for backward compatibility
+        handleLogin,
         handleLogout,
         updateUserProfile
     };

@@ -84,15 +84,13 @@ function Login() {
             console.log('Login successful, updating auth state...');
 
             // Update the authentication state using context
-            // Make sure we're passing what the handleLogin function expects
+            // Pass the response directly to handleLogin
             const success = handleLogin({
-                username: response.username,
-                password: credentials.password, // Send the password from credentials
-                // Include additional user data from response
                 userId: response.userId,
+                username: response.username,
+                password: credentials.password,
                 email: response.email,
-                roles: response.roles,
-                token: response.token
+                roles: response.roles
             });
 
             if (success) {
