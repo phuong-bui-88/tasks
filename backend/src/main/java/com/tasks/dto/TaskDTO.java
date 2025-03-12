@@ -10,6 +10,8 @@ public class TaskDTO {
     private LocalDateTime dueDate;
     private Task.TaskStatus status;
     private String assigneeEmail;
+    private Long authorId;
+    private String authorUsername;
     
     public TaskDTO() {
     }
@@ -21,6 +23,10 @@ public class TaskDTO {
         this.dueDate = task.getDueDate();
         this.status = task.getStatus();
         this.assigneeEmail = task.getAssigneeEmail();
+        if (task.getAuthor() != null) {
+            this.authorId = task.getAuthor().getId();
+            this.authorUsername = task.getAuthor().getUsername();
+        }
     }
     
     // Static factory method to create DTO from entity
@@ -36,6 +42,7 @@ public class TaskDTO {
         task.setDueDate(this.dueDate);
         task.setStatus(this.status);
         task.setAssigneeEmail(this.assigneeEmail);
+        // Author is set by the service layer
         return task;
     }
     
@@ -86,5 +93,21 @@ public class TaskDTO {
     
     public void setAssigneeEmail(String assigneeEmail) {
         this.assigneeEmail = assigneeEmail;
+    }
+    
+    public Long getAuthorId() {
+        return authorId;
+    }
+    
+    public void setAuthorId(Long authorId) {
+        this.authorId = authorId;
+    }
+    
+    public String getAuthorUsername() {
+        return authorUsername;
+    }
+    
+    public void setAuthorUsername(String authorUsername) {
+        this.authorUsername = authorUsername;
     }
 }

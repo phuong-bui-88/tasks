@@ -10,7 +10,7 @@ This API provides endpoints for user authentication, user management, and task m
 |----------|-----------|-------------|
 | Authentication | 2 | User registration and login |
 | User Management | 1 | Update user information |
-| Task Management | 8 | CRUD operations for tasks, status filtering, and reminder management |
+| Task Management | 9 | CRUD operations for tasks, status filtering, reminder management, and task authorship |
 
 ### Table of Contents
 
@@ -29,6 +29,7 @@ This API provides endpoints for user authentication, user management, and task m
    - [Delete Task](#delete-task)
    - [Get Tasks Due for Reminder](#get-tasks-due-for-reminder)
    - [Mark Reminder as Sent](#mark-reminder-as-sent)
+   - [Get My Tasks](#get-my-tasks)
 
 ## Authentication Endpoints
 
@@ -338,7 +339,7 @@ curl -X PUT http://localhost:8080/api/users/1 \
 ### Create Task
 `POST /api/tasks`
 
-Creates a new task in the system.
+Creates a new task in the system. The author is automatically determined from the JWT token of the authenticated user making the request.
 
 #### Request
 
@@ -374,7 +375,9 @@ Authorization: Bearer {token}
   "assigneeEmail": "john.doe@example.com",
   "assigneeName": "John Doe",
   "reminderDate": "2023-12-14T09:00:00",
-  "reminderSent": false
+  "reminderSent": false,
+  "authorId": 123,
+  "authorUsername": "johndoe"
 }
 ```
 
@@ -389,15 +392,27 @@ Authorization: Bearer {token}
 }
 ```
 
+**Failure (401 Unauthorized)**
+```json
+{
+  "timestamp": "2023-11-10T08:30:45",
+  "status": 401,
+  "error": "Unauthorized",
+  "message": "User not authenticated",
+  "path": "/api/tasks"
+}
+```
+
 #### Implementation Details
 
 The create task endpoint is implemented in the `TaskController` class and uses the `TaskService` for business logic:
 
-1. Validates the incoming task data
-2. Creates a new Task entity
-3. Associates the task with the assignee if specified
-4. Saves the task to the database
-5. Returns the created task information
+1. Extracts the authenticated user from the JWT token
+2. Validates the incoming task data
+3. Creates a new Task entity with the authenticated user as author
+4. Associates the task with the assignee if specified
+5. Saves the task to the database
+6. Returns the created task information
 
 #### Related Files
 
@@ -406,6 +421,7 @@ The create task endpoint is implemented in the `TaskController` class and uses t
 - `Task.java`: Entity class representing a task
 - `TaskDTO.java`: DTO for task data transfer
 - `TaskRepository.java`: Repository for database operations
+- `SecurityUtils.java`: Utility class for extracting user information from JWT token
 
 #### Sample cURL
 
@@ -634,7 +650,7 @@ curl -X GET http://localhost:8080/api/tasks/status/IN_PROGRESS \
 ### Update Task
 `PUT /api/tasks/{id}`
 
-Updates an existing task.
+Updates an existing task. The author relationship remains unchanged and cannot be modified through this endpoint.
 
 #### Request
 
@@ -670,7 +686,9 @@ Authorization: Bearer {token}
   "assigneeEmail": "john.doe@example.com",
   "assigneeName": "John Doe",
   "reminderDate": "2023-12-19T09:00:00",
-  "reminderSent": false
+  "reminderSent": false,
+  "authorId": 123,
+  "authorUsername": "johndoe"
 }
 ```
 
@@ -685,6 +703,17 @@ Authorization: Bearer {token}
 }
 ```
 
+**Failure (401 Unauthorized)**
+```json
+{
+  "timestamp": "2023-11-12T14:25:30",
+  "status": 401,
+  "error": "Unauthorized",
+  "message": "User not authenticated",
+  "path": "/api/tasks/1"
+}
+```
+
 #### Implementation Details
 
 The update task endpoint is implemented in the `TaskController` class and uses the `TaskService` for updating task information:
@@ -693,8 +722,9 @@ The update task endpoint is implemented in the `TaskController` class and uses t
 2. Retrieves the existing task from the database
 3. Updates the task fields with the provided values
 4. Updates the assignee if the assignee email has changed
-5. Saves the updated task to the database
-6. Returns the updated task information
+5. Preserves the original author relationship
+6. Saves the updated task to the database
+7. Returns the updated task information
 
 #### Related Files
 
@@ -828,3 +858,60 @@ Authorization: Bearer {token}
 #### Implementation Details
 
 The mark reminder as sent endpoint is implemented in the `TaskController` class and uses the `TaskService` to update the reminder status of a task.
+
+### Get My Tasks
+`GET /api/tasks/my-tasks`
+
+Retrieves all tasks created by the authenticated user (as determined by the JWT token).
+
+#### Request
+
+```http
+GET /api/tasks/my-tasks
+Authorization: Bearer {token}
+```
+
+#### Response
+
+**Success (200 OK)**
+```json
+[
+  {
+    "id": 1,
+    "title": "Implement user authentication",
+    "description": "Add JWT authentication to the backend API",
+    "status": "TODO",
+    "priority": "HIGH",
+    "createdAt": "2023-11-10T08:30:45",
+    "updatedAt": "2023-11-10T08:30:45",
+    "dueDate": "2023-12-15T12:00:00",
+    "assigneeEmail": "john.doe@example.com",
+    "assigneeName": "John Doe",
+    "reminderDate": "2023-12-14T09:00:00",
+    "reminderSent": false,
+    "authorId": 123,
+    "authorUsername": "johndoe"
+  },
+  // ...more tasks...
+]
+```
+
+**Failure (401 Unauthorized)**
+```json
+{
+  "timestamp": "2023-11-10T10:15:30",
+  "status": 401,
+  "error": "Unauthorized",
+  "message": "User not authenticated",
+  "path": "/api/tasks/my-tasks"
+}
+```
+
+#### Implementation Details
+
+The get my tasks endpoint is implemented in the `TaskController` class and uses the `TaskService` for filtering tasks by the authenticated user:
+
+1. Extracts the user information from the JWT token in the authentication context
+2. Retrieves tasks with the authenticated user's ID as author
+3. Maps each task entity to a DTO
+4. Returns a list of filtered task information

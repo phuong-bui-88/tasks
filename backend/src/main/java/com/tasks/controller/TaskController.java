@@ -1,14 +1,27 @@
 package com.tasks.controller;
 
-import com.tasks.dto.TaskDTO;
-import com.tasks.model.Task;
-import com.tasks.service.TaskService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
+import com.tasks.dto.TaskDTO;
+import com.tasks.model.Task;
+import com.tasks.model.User;
+import com.tasks.repository.UserRepository;
+import com.tasks.service.TaskService;
+import com.tasks.util.SecurityUtils;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -16,15 +29,19 @@ import java.util.List;
 public class TaskController {
     
     private final TaskService taskService;
+    private final UserRepository userRepository;
     
     @Autowired
-    public TaskController(TaskService taskService) {
+    public TaskController(TaskService taskService, UserRepository userRepository) {
         this.taskService = taskService;
+        this.userRepository = userRepository;
     }
     
     @PostMapping
     public ResponseEntity<TaskDTO> createTask(@RequestBody TaskDTO taskDTO) {
-        return new ResponseEntity<>(taskService.createTask(taskDTO), HttpStatus.CREATED);
+        User currentUser = SecurityUtils.getCurrentUser(userRepository)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated"));
+        return new ResponseEntity<>(taskService.createTask(taskDTO, currentUser), HttpStatus.CREATED);
     }
     
     @GetMapping("/{id}")
@@ -39,13 +56,19 @@ public class TaskController {
     
     @GetMapping("/status/{status}")
     public ResponseEntity<List<TaskDTO>> getTasksByStatus(@PathVariable Task.TaskStatus status) {
-        
         return ResponseEntity.ok(taskService.getTasksByStatus(status));
     }
     
     @GetMapping("/assignee/{email}")
     public ResponseEntity<List<TaskDTO>> getTasksByAssignee(@PathVariable String email) {
         return ResponseEntity.ok(taskService.getTasksByAssignee(email));
+    }
+    
+    @GetMapping("/my-tasks")
+    public ResponseEntity<List<TaskDTO>> getMyTasks() {
+        User currentUser = SecurityUtils.getCurrentUser(userRepository)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated"));
+        return ResponseEntity.ok(taskService.getTasksByAuthor(currentUser.getId()));
     }
     
     @PutMapping("/{id}")

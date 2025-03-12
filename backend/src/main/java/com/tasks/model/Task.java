@@ -28,6 +28,10 @@ public class Task {
     
     private boolean reminderSent;
     
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id")
+    private User author;
+    
     public enum TaskStatus {
         TODO, IN_PROGRESS, DONE
     }
@@ -87,5 +91,13 @@ public class Task {
 
     public void setReminderSent(boolean reminderSent) {
         this.reminderSent = reminderSent;
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
     }
 }
