@@ -70,16 +70,20 @@
   font-size: 18px;
   display: flex;
   align-items: center;
+  pointer-events: none; /* Prevents the icon from intercepting clicks and input */
+  z-index: 1; /* Ensures proper layering */
 }
 
 .input-icon-wrapper input {
   width: 100%;
-  padding: 12px 12px 12px 40px;
+  padding: 12px 12px 12px 40px !important; /* Adjusted left padding to 40px */
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 1rem;
   transition: all 0.2s ease;
   background-color: #f8f9fa;
+  position: relative; /* Ensure input is positioned in the document flow */
+  box-sizing: border-box; /* Ensure padding is included in the element's total width and height */
 }
 
 .input-icon-wrapper input:focus {
@@ -124,9 +128,15 @@
 }
 
 @keyframes fadeOut {
-  0% { opacity: 1; }
-  80% { opacity: 1; }
-  100% { opacity: 0; }
+  0% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 .auth-submit-button {
@@ -209,8 +219,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Font icons */
@@ -237,7 +251,7 @@
     margin: 1rem auto;
     max-width: 90%;
   }
-  
+
   .auth-header h2 {
     font-size: 1.75rem;
   }

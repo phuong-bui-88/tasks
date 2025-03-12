@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 function EditTask({ tasks, setTasks }) {
   const { id } = useParams();
   const navigate = useNavigate();
-  
+
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState('PENDING');
@@ -16,12 +16,12 @@ function EditTask({ tasks, setTasks }) {
 
   useEffect(() => {
     const task = tasks.find(task => task.id === parseInt(id) || task.id === id);
-    
+
     if (!task) {
       setNotFound(true);
       return;
     }
-    
+
     setTitle(task.title);
     setDescription(task.description || '');
     setStatus(task.status);
@@ -33,12 +33,13 @@ function EditTask({ tasks, setTasks }) {
     e.preventDefault();
     setIsSubmitting(true);
     setError(null);
-    
+
     try {
       const response = await fetch(`http://localhost:8080/api/tasks/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          // Add Authorization header if using authentication
         },
         body: JSON.stringify({
           title,
@@ -50,18 +51,19 @@ function EditTask({ tasks, setTasks }) {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to update task');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update task');
       }
 
       const updatedTask = await response.json();
-      
+
       // Update tasks state with the updated task
-      setTasks(prevTasks => 
-        prevTasks.map(task => 
+      setTasks(prevTasks =>
+        prevTasks.map(task =>
           task.id === updatedTask.id ? updatedTask : task
         )
       );
-      
+
       // Redirect to home page
       navigate('/');
     } catch (err) {
@@ -78,9 +80,9 @@ function EditTask({ tasks, setTasks }) {
   return (
     <div className="mt-4">
       <h2>Edit Task</h2>
-      
+
       {error && <div className="alert alert-danger">{error}</div>}
-      
+
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
           <label htmlFor="title" className="form-label">Title</label>
@@ -93,7 +95,7 @@ function EditTask({ tasks, setTasks }) {
             required
           />
         </div>
-        
+
         <div className="mb-3">
           <label htmlFor="description" className="form-label">Description</label>
           <textarea
@@ -103,7 +105,7 @@ function EditTask({ tasks, setTasks }) {
             onChange={(e) => setDescription(e.target.value)}
           ></textarea>
         </div>
-        
+
         <div className="mb-3">
           <label htmlFor="status" className="form-label">Status</label>
           <select
@@ -117,7 +119,7 @@ function EditTask({ tasks, setTasks }) {
             <option value="COMPLETED">Completed</option>
           </select>
         </div>
-        
+
         <div className="mb-3">
           <label htmlFor="dueDate" className="form-label">Due Date</label>
           <input
@@ -128,7 +130,7 @@ function EditTask({ tasks, setTasks }) {
             onChange={(e) => setDueDate(e.target.value)}
           />
         </div>
-        
+
         <div className="mb-3">
           <label htmlFor="assigneeEmail" className="form-label">Assignee Email</label>
           <input
@@ -139,7 +141,7 @@ function EditTask({ tasks, setTasks }) {
             onChange={(e) => setAssigneeEmail(e.target.value)}
           />
         </div>
-        
+
         <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
           {isSubmitting ? 'Saving...' : 'Save Changes'}
         </button>

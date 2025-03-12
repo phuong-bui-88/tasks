@@ -1,5 +1,35 @@
 # Backend API Documentation
 
+## API Summary
+
+This API provides endpoints for user authentication, user management, and task management in the task tracking system.
+
+### Available Endpoints
+
+| Category | Endpoints | Description |
+|----------|-----------|-------------|
+| Authentication | 2 | User registration and login |
+| User Management | 1 | Update user information |
+| Task Management | 8 | CRUD operations for tasks, status filtering, and reminder management |
+
+### Table of Contents
+
+1. [Authentication Endpoints](#authentication-endpoints)
+   - [Register User](#register-user)
+   - [Login User](#login-user)
+2. [User Management Endpoints](#user-management-endpoints)
+   - [Update User](#update-user)
+3. [Task Management Endpoints](#task-management-endpoints)
+   - [Create Task](#create-task)
+   - [Get Task by ID](#get-task-by-id)
+   - [Get All Tasks](#get-all-tasks)
+   - [Get Tasks by Status](#get-tasks-by-status)
+   - [Get Tasks by Assignee](#get-tasks-by-assignee)
+   - [Update Task](#update-task)
+   - [Delete Task](#delete-task)
+   - [Get Tasks Due for Reminder](#get-tasks-due-for-reminder)
+   - [Mark Reminder as Sent](#mark-reminder-as-sent)
+
 ## Authentication Endpoints
 
 ### Register User
@@ -302,3 +332,499 @@ curl -X PUT http://localhost:8080/api/users/1 \
 - Password changes trigger security notifications (email)
 - Input validation is performed for all fields
 - Changes to sensitive fields (email, role) may require additional verification
+
+## Task Management Endpoints
+
+### Create Task
+`POST /api/tasks`
+
+Creates a new task in the system.
+
+#### Request
+
+```http
+POST /api/tasks
+Content-Type: application/json
+Authorization: Bearer {token}
+
+{
+  "title": "Implement user authentication",
+  "description": "Add JWT authentication to the backend API",
+  "status": "TODO",
+  "priority": "HIGH",
+  "dueDate": "2023-12-15T12:00:00",
+  "assigneeEmail": "john.doe@example.com",
+  "reminderDate": "2023-12-14T09:00:00"
+}
+```
+
+#### Response
+
+**Success (201 Created)**
+```json
+{
+  "id": 1,
+  "title": "Implement user authentication",
+  "description": "Add JWT authentication to the backend API",
+  "status": "TODO",
+  "priority": "HIGH",
+  "createdAt": "2023-11-10T08:30:45",
+  "updatedAt": "2023-11-10T08:30:45",
+  "dueDate": "2023-12-15T12:00:00",
+  "assigneeEmail": "john.doe@example.com",
+  "assigneeName": "John Doe",
+  "reminderDate": "2023-12-14T09:00:00",
+  "reminderSent": false
+}
+```
+
+**Failure (400 Bad Request)**
+```json
+{
+  "timestamp": "2023-11-10T08:30:45",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Title cannot be empty",
+  "path": "/api/tasks"
+}
+```
+
+#### Implementation Details
+
+The create task endpoint is implemented in the `TaskController` class and uses the `TaskService` for business logic:
+
+1. Validates the incoming task data
+2. Creates a new Task entity
+3. Associates the task with the assignee if specified
+4. Saves the task to the database
+5. Returns the created task information
+
+#### Related Files
+
+- `TaskController.java`: Controller that handles the HTTP request
+- `TaskService.java`: Service that contains business logic for task management
+- `Task.java`: Entity class representing a task
+- `TaskDTO.java`: DTO for task data transfer
+- `TaskRepository.java`: Repository for database operations
+
+#### Sample cURL
+
+```bash
+curl -X POST http://localhost:8080/api/tasks \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -d '{
+    "title": "Implement user authentication",
+    "description": "Add JWT authentication to the backend API",
+    "status": "TODO",
+    "priority": "HIGH",
+    "dueDate": "2023-12-15T12:00:00",
+    "assigneeEmail": "john.doe@example.com",
+    "reminderDate": "2023-12-14T09:00:00"
+  }'
+```
+
+### Get Task by ID
+`GET /api/tasks/{id}`
+
+Retrieves a task by its ID.
+
+#### Request
+
+```http
+GET /api/tasks/1
+Authorization: Bearer {token}
+```
+
+#### Response
+
+**Success (200 OK)**
+```json
+{
+  "id": 1,
+  "title": "Implement user authentication",
+  "description": "Add JWT authentication to the backend API",
+  "status": "TODO",
+  "priority": "HIGH",
+  "createdAt": "2023-11-10T08:30:45",
+  "updatedAt": "2023-11-10T08:30:45",
+  "dueDate": "2023-12-15T12:00:00",
+  "assigneeEmail": "john.doe@example.com",
+  "assigneeName": "John Doe",
+  "reminderDate": "2023-12-14T09:00:00",
+  "reminderSent": false
+}
+```
+
+**Failure (404 Not Found)**
+```json
+{
+  "timestamp": "2023-11-10T09:15:20",
+  "status": 404,
+  "error": "Not Found",
+  "message": "Task with id 1 not found",
+  "path": "/api/tasks/1"
+}
+```
+
+#### Implementation Details
+
+The get task endpoint is implemented in the `TaskController` class and uses the `TaskService` for retrieving task data:
+
+1. Validates the task ID
+2. Retrieves the task from the database
+3. Maps the task entity to a DTO
+4. Returns the task information
+
+#### Related Files
+
+- `TaskController.java`: Controller that handles the HTTP request
+- `TaskService.java`: Service that contains business logic for task management
+- `TaskDTO.java`: DTO for task data transfer
+- `TaskRepository.java`: Repository for database operations
+
+#### Sample cURL
+
+```bash
+curl -X GET http://localhost:8080/api/tasks/1 \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+### Get All Tasks
+`GET /api/tasks`
+
+Retrieves all tasks in the system.
+
+#### Request
+
+```http
+GET /api/tasks
+Authorization: Bearer {token}
+```
+
+#### Response
+
+**Success (200 OK)**
+```json
+[
+  {
+    "id": 1,
+    "title": "Implement user authentication",
+    "description": "Add JWT authentication to the backend API",
+    "status": "TODO",
+    "priority": "HIGH",
+    "createdAt": "2023-11-10T08:30:45",
+    "updatedAt": "2023-11-10T08:30:45",
+    "dueDate": "2023-12-15T12:00:00",
+    "assigneeEmail": "john.doe@example.com",
+    "assigneeName": "John Doe",
+    "reminderDate": "2023-12-14T09:00:00",
+    "reminderSent": false
+  },
+  {
+    "id": 2,
+    "title": "Design database schema",
+    "description": "Create ERD and implement database tables",
+    "status": "IN_PROGRESS",
+    "priority": "MEDIUM",
+    "createdAt": "2023-11-09T14:20:30",
+    "updatedAt": "2023-11-10T10:15:45",
+    "dueDate": "2023-12-01T17:00:00",
+    "assigneeEmail": "jane.smith@example.com",
+    "assigneeName": "Jane Smith",
+    "reminderDate": "2023-11-30T09:00:00",
+    "reminderSent": false
+  }
+]
+```
+
+#### Implementation Details
+
+The get all tasks endpoint is implemented in the `TaskController` class and uses the `TaskService` for retrieving all tasks:
+
+1. Retrieves all tasks from the database
+2. Maps each task entity to a DTO
+3. Returns a list of all task information
+
+#### Related Files
+
+- `TaskController.java`: Controller that handles the HTTP request
+- `TaskService.java`: Service that contains business logic for task management
+- `TaskDTO.java`: DTO for task data transfer
+- `TaskRepository.java`: Repository for database operations
+
+#### Sample cURL
+
+```bash
+curl -X GET http://localhost:8080/api/tasks \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+### Get Tasks by Status
+`GET /api/tasks/status/{status}`
+
+Retrieves all tasks with the specified status.
+
+#### Request
+
+```http
+GET /api/tasks/status/IN_PROGRESS
+Authorization: Bearer {token}
+```
+
+#### Response
+
+**Success (200 OK)**
+```json
+[
+  {
+    "id": 2,
+    "title": "Design database schema",
+    "description": "Create ERD and implement database tables",
+    "status": "IN_PROGRESS",
+    "priority": "MEDIUM",
+    "createdAt": "2023-11-09T14:20:30",
+    "updatedAt": "2023-11-10T10:15:45",
+    "dueDate": "2023-12-01T17:00:00",
+    "assigneeEmail": "jane.smith@example.com",
+    "assigneeName": "Jane Smith",
+    "reminderDate": "2023-11-30T09:00:00",
+    "reminderSent": false
+  },
+  {
+    "id": 3,
+    "title": "Create user interface mockups",
+    "description": "Design UI mockups for the task management system",
+    "status": "IN_PROGRESS",
+    "priority": "HIGH",
+    "createdAt": "2023-11-08T11:45:10",
+    "updatedAt": "2023-11-09T16:30:20",
+    "dueDate": "2023-11-20T17:00:00",
+    "assigneeEmail": "alex.designer@example.com",
+    "assigneeName": "Alex Designer",
+    "reminderDate": "2023-11-19T09:00:00",
+    "reminderSent": false
+  }
+]
+```
+
+#### Implementation Details
+
+The get tasks by status endpoint is implemented in the `TaskController` class and uses the `TaskService` for filtering tasks by status:
+
+1. Validates the status parameter
+2. Retrieves tasks with the specified status from the database
+3. Maps each task entity to a DTO
+4. Returns a list of filtered task information
+
+#### Related Files
+
+- `TaskController.java`: Controller that handles the HTTP request
+- `TaskService.java`: Service that contains business logic for task management
+- `TaskDTO.java`: DTO for task data transfer
+- `TaskRepository.java`: Repository for database operations
+
+#### Sample cURL
+
+```bash
+curl -X GET http://localhost:8080/api/tasks/status/IN_PROGRESS \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+### Update Task
+`PUT /api/tasks/{id}`
+
+Updates an existing task.
+
+#### Request
+
+```http
+PUT /api/tasks/1
+Content-Type: application/json
+Authorization: Bearer {token}
+
+{
+  "title": "Implement user authentication and authorization",
+  "description": "Add JWT authentication and role-based authorization to the backend API",
+  "status": "IN_PROGRESS",
+  "priority": "HIGH",
+  "dueDate": "2023-12-20T12:00:00",
+  "assigneeEmail": "john.doe@example.com",
+  "reminderDate": "2023-12-19T09:00:00"
+}
+```
+
+#### Response
+
+**Success (200 OK)**
+```json
+{
+  "id": 1,
+  "title": "Implement user authentication and authorization",
+  "description": "Add JWT authentication and role-based authorization to the backend API",
+  "status": "IN_PROGRESS",
+  "priority": "HIGH",
+  "createdAt": "2023-11-10T08:30:45",
+  "updatedAt": "2023-11-12T14:25:30",
+  "dueDate": "2023-12-20T12:00:00",
+  "assigneeEmail": "john.doe@example.com",
+  "assigneeName": "John Doe",
+  "reminderDate": "2023-12-19T09:00:00",
+  "reminderSent": false
+}
+```
+
+**Failure (404 Not Found)**
+```json
+{
+  "timestamp": "2023-11-12T14:25:30",
+  "status": 404,
+  "error": "Not Found",
+  "message": "Task with id 1 not found",
+  "path": "/api/tasks/1"
+}
+```
+
+#### Implementation Details
+
+The update task endpoint is implemented in the `TaskController` class and uses the `TaskService` for updating task information:
+
+1. Validates the task ID and incoming data
+2. Retrieves the existing task from the database
+3. Updates the task fields with the provided values
+4. Updates the assignee if the assignee email has changed
+5. Saves the updated task to the database
+6. Returns the updated task information
+
+#### Related Files
+
+- `TaskController.java`: Controller that handles the HTTP request
+- `TaskService.java`: Service that contains business logic for task management
+- `Task.java`: Entity class representing a task
+- `TaskDTO.java`: DTO for task data transfer
+- `TaskRepository.java`: Repository for database operations
+
+#### Sample cURL
+
+```bash
+curl -X PUT http://localhost:8080/api/tasks/1 \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -d '{
+    "title": "Implement user authentication and authorization",
+    "description": "Add JWT authentication and role-based authorization to the backend API",
+    "status": "IN_PROGRESS",
+    "priority": "HIGH",
+    "dueDate": "2023-12-20T12:00:00",
+    "assigneeEmail": "john.doe@example.com",
+    "reminderDate": "2023-12-19T09:00:00"
+  }'
+```
+
+### Delete Task
+`DELETE /api/tasks/{id}`
+
+Deletes a task by its ID.
+
+#### Request
+
+```http
+DELETE /api/tasks/1
+Authorization: Bearer {token}
+```
+
+#### Response
+
+**Success (204 No Content)**
+
+**Failure (404 Not Found)**
+```json
+{
+  "timestamp": "2023-11-14T09:45:30",
+  "status": 404,
+  "error": "Not Found",
+  "message": "Task with id 1 not found",
+  "path": "/api/tasks/1"
+}
+```
+
+#### Implementation Details
+
+The delete task endpoint is implemented in the `TaskController` class and uses the `TaskService` for removing tasks:
+
+1. Validates the task ID
+2. Checks if the task exists
+3. Removes the task from the database
+4. Returns a no content response
+
+#### Related Files
+
+- `TaskController.java`: Controller that handles the HTTP request
+- `TaskService.java`: Service that contains business logic for task management
+- `TaskRepository.java`: Repository for database operations
+
+#### Sample cURL
+
+```bash
+curl -X DELETE http://localhost:8080/api/tasks/1 \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+### Get Tasks Due for Reminder
+`GET /api/tasks/reminders`
+
+Retrieves all tasks that are due for reminders.
+
+#### Request
+
+```http
+GET /api/tasks/reminders
+Authorization: Bearer {token}
+```
+
+#### Response
+
+**Success (200 OK)**
+```json
+[
+  {
+    // TaskDTO response
+  },
+  // ...more tasks...
+]
+```
+
+#### Implementation Details
+
+The get tasks due for reminder endpoint is implemented in the `TaskController` class and uses the `TaskService` for identifying tasks requiring reminders.
+
+### Mark Reminder as Sent
+`PUT /api/tasks/{id}/reminder-sent`
+
+Marks a task's reminder as sent.
+
+#### Request
+
+```http
+PUT /api/tasks/{id}/reminder-sent
+Authorization: Bearer {token}
+```
+
+#### Response
+
+**Success (200 OK)**
+
+**Failure (404 Not Found)**
+```json
+{
+  "timestamp": "timestamp",
+  "status": 404,
+  "error": "Not Found",
+  "message": "Task with id {id} not found",
+  "path": "/api/tasks/{id}/reminder-sent"
+}
+```
+
+#### Implementation Details
+
+The mark reminder as sent endpoint is implemented in the `TaskController` class and uses the `TaskService` to update the reminder status of a task.
