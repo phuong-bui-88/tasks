@@ -25,7 +25,7 @@ class AuthService {
 
   async register(userData) {
     try {
-      const response = await apiClient.post(AUTH_ENDPOINT + 'register', userData);
+      const response = await apiClient.post(`${AUTH_ENDPOINT}register`, userData);
       return response.data;
     } catch (error) {
       throw error;
@@ -39,8 +39,7 @@ class AuthService {
 
   getCurrentUser() {
     const userStr = localStorage.getItem('user');
-    if (!userStr) return null;
-    return JSON.parse(userStr);
+    return userStr ? JSON.parse(userStr) : null;
   }
 
   getAuthToken() {

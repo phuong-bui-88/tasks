@@ -8,7 +8,7 @@ This API provides endpoints for user authentication, user management, and task m
 
 | Category | Endpoints | Description |
 |----------|-----------|-------------|
-| Authentication | 2 | User registration and login |
+| Authentication | 3 | User registration, login and logout |
 | User Management | 1 | Update user information |
 | Task Management | 9 | CRUD operations for tasks, status filtering, reminder management, and task authorship |
 
@@ -17,6 +17,7 @@ This API provides endpoints for user authentication, user management, and task m
 1. [Authentication Endpoints](#authentication-endpoints)
    - [Register User](#register-user)
    - [Login User](#login-user)
+   - [Logout User](#logout-user)
 2. [User Management Endpoints](#user-management-endpoints)
    - [Update User](#update-user)
 3. [Task Management Endpoints](#task-management-endpoints)
@@ -47,10 +48,7 @@ Content-Type: application/json
 {
   "username": "string",
   "email": "string",
-  "password": "string",
-  "firstName": "string",
-  "lastName": "string",
-  "role": "string" (optional, defaults to "USER")
+  "password": "string"
 }
 ```
 
@@ -59,78 +57,65 @@ Content-Type: application/json
 **Success (201 Created)**
 ```json
 {
-  "id": "long",
+  "success": true,
+  "message": "User registered successfully",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "userId": 1,
   "username": "string",
   "email": "string",
-  "firstName": "string",
-  "lastName": "string",
-  "role": "string",
-  "createdAt": "timestamp",
-  "message": "User registered successfully"
+  "roles": ["ROLE_USER"]
 }
 ```
 
 **Failure (400 Bad Request)**
 ```json
 {
-  "timestamp": "timestamp",
-  "status": 400,
-  "error": "Bad Request",
-  "message": "Email already in use",
-  "path": "/api/auth/register"
+  "success": false,
+  "message": "Username is already taken",
+  "token": null,
+  "userId": null,
+  "username": null,
+  "email": null,
+  "roles": null
 }
 ```
 
 **Failure (400 Bad Request)**
 ```json
 {
-  "timestamp": "timestamp",
-  "status": 400,
-  "error": "Bad Request",
-  "message": "Username already taken",
-  "path": "/api/auth/register"
+  "success": false,
+  "message": "Email is already in use",
+  "token": null,
+  "userId": null,
+  "username": null,
+  "email": null,
+  "roles": null
 }
 ```
 
 #### Implementation Details
 
-The registration endpoint is implemented in the `AuthController` class and uses the `UserService` for business logic:
+The registration endpoint is implemented in the `AuthController` class and uses the `UserService.registerUser()` method for business logic:
 
 1. Validates the incoming registration request
-2. Checks if username or email already exists
-3. Encodes the password using BCrypt
-4. Creates a new User entity
-5. Saves the user to the database
-6. Returns user information without the password
+2. Checks if username already exists using `userRepository.existsByUsername()`
+3. Checks if email already exists using `userRepository.existsByEmail()`
+4. Encodes the password using BCrypt via the passwordEncoder
+5. Creates a new User entity with ROLE_USER as the default role
+6. Sets the user as active and records creation timestamp
+7. Saves the user to the database
+8. Generates a JWT token for the newly registered user
+9. Returns an AuthResponse object containing the success status, token and user information
 
 #### Related Files
 
 - `AuthController.java`: Controller that handles the HTTP request
-- `UserService.java`: Service that contains business logic for user management
+- `UserService.java`: Service interface defining the registerUser method
+- `UserServiceImpl.java`: Implementation of the registration logic
 - `User.java`: Entity class representing a user
 - `UserRepository.java`: Repository for database operations
+- `JwtService.java`: Service for generating JWT tokens
 - `SecurityConfig.java`: Security configuration for authentication
-
-#### Sample cURL
-
-```bash
-curl -X POST http://localhost:8080/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "username": "johndoe",
-    "email": "john.doe@example.com",
-    "password": "SecurePassword123!",
-    "firstName": "John",
-    "lastName": "Doe"
-  }'
-```
-
-#### Security Considerations
-
-- Passwords are hashed using BCrypt before storage
-- Email verification is implemented (optional feature that can be enabled)
-- Rate limiting is applied to prevent brute force attacks
-- Input validation is performed for all fields
 
 ### Login User
 `POST /api/auth/login`
@@ -220,6 +205,69 @@ curl -X POST http://localhost:8080/api/auth/login \
 - JWT tokens have a configurable expiration time
 - Sensitive operations require re-authentication
 - Session information is not stored server-side (stateless)
+
+### Logout User
+`POST /api/auth/logout`
+
+Logs out the currently authenticated user by invalidating their JWT token.
+
+#### Request
+
+```http
+POST /api/auth/logout
+Authorization: Bearer {token}
+```
+
+#### Response
+
+**Success (200 OK)**
+```json
+{
+  "success": true,
+  "message": "Logout successful"
+}
+```
+
+**Failure (401 Unauthorized)**
+```json
+{
+  "timestamp": "timestamp",
+  "status": 401,
+  "error": "Unauthorized",
+  "message": "No active session found",
+  "path": "/api/auth/logout"
+}
+```
+
+#### Implementation Details
+
+The logout endpoint is implemented in the `AuthController` class and uses the `UserService` for handling user session termination:
+
+1. Validates the authenticated user's token
+2. Invalidates the token (adds to blacklist or revokes it)
+3. Clears any server-side session data
+4. Returns a success response
+
+#### Related Files
+
+- `AuthController.java`: Controller that handles the HTTP request
+- `UserService.java`: Service that contains the `logoutUser()` method
+- `JwtTokenProvider.java`: Service for JWT token validation and revocation
+- `SecurityConfig.java`: Security configuration
+
+#### Sample cURL
+
+```bash
+curl -X POST http://localhost:8080/api/auth/logout \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+#### Security Considerations
+
+- Token revocation is handled on the server side
+- Blacklisted tokens cannot be reused
+- Client is responsible for removing the token from local storage
+- Sensitive operations after logout require re-authentication
 
 ## User Management Endpoints
 

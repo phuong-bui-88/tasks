@@ -12,4 +12,5 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findByStatus(Task.TaskStatus status);
     List<Task> findByAssigneeEmail(String email);
     List<Task> findByDueDateBeforeAndStatusNotAndReminderSentFalse(LocalDateTime dueDate, Task.TaskStatus status);
+    List<Task> findByAuthorId(Long authorId);
 }

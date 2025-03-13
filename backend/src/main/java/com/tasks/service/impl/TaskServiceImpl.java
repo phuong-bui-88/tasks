@@ -1,16 +1,18 @@
 package com.tasks.service.impl;
 
-import com.tasks.dto.TaskDTO;
-import com.tasks.exception.ResourceNotFoundException;
-import com.tasks.model.Task;
-import com.tasks.repository.TaskRepository;
-import com.tasks.service.TaskService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.tasks.dto.TaskDTO;
+import com.tasks.exception.ResourceNotFoundException;
+import com.tasks.model.Task;
+import com.tasks.model.User;
+import com.tasks.repository.TaskRepository;
+import com.tasks.service.TaskService;
 
 @Service
 public class TaskServiceImpl implements TaskService {
@@ -23,12 +25,13 @@ public class TaskServiceImpl implements TaskService {
     }
     
     @Override
-    public TaskDTO createTask(TaskDTO taskDTO) {
+    public TaskDTO createTask(TaskDTO taskDTO, User author) {
         Task task = taskDTO.toEntity();
         if (task.getStatus() == null) {
             task.setStatus(Task.TaskStatus.TODO);
         }
         task.setReminderSent(false);
+        task.setAuthor(author);
         Task savedTask = taskRepository.save(task);
         return TaskDTO.fromEntity(savedTask);
     }
@@ -62,6 +65,13 @@ public class TaskServiceImpl implements TaskService {
     }
     
     @Override
+    public List<TaskDTO> getTasksByAuthor(Long authorId) {
+        return taskRepository.findByAuthorId(authorId).stream()
+                .map(TaskDTO::fromEntity)
+                .collect(Collectors.toList());
+    }
+    
+    @Override
     public TaskDTO updateTask(Long id, TaskDTO taskDTO) {
         Task existingTask = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found with id: " + id));
@@ -86,8 +96,8 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public List<TaskDTO> getTasksDueForReminder() {
         LocalDateTime now = LocalDateTime.now();
-        return taskRepository.findByDueDateBeforeAndStatusNotAndReminderSentFalse(
-                now.plusDays(1), Task.TaskStatus.DONE).stream()
+        return taskRepository.findByDueDateBeforeAndStatusNotAndReminderSentFalse(now.plusDays(1), Task.TaskStatus.DONE)
+                .stream()
                 .map(TaskDTO::fromEntity)
                 .collect(Collectors.toList());
     }

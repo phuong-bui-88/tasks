@@ -1,13 +1,12 @@
+import { Alert, Box, Button, Container, Grid, Paper, TextField, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { TextField, Button, Typography, Container, Box, Alert, Paper, Grid } from '@mui/material';
 import authService from '../../services/authService';
 import { validateEmail, validatePassword } from '../../utils/validation';
 
 const Register = () => {
     const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
+        username: '',
         email: '',
         password: '',
         confirmPassword: '',
@@ -30,12 +29,8 @@ const Register = () => {
     const validateForm = () => {
         const newErrors = {};
 
-        if (!formData.firstName.trim()) {
-            newErrors.firstName = 'First name is required';
-        }
-
-        if (!formData.lastName.trim()) {
-            newErrors.lastName = 'Last name is required';
+        if (!formData.username.trim()) {
+            newErrors.username = 'Username is required';
         }
 
         if (!formData.email.trim()) {
@@ -69,14 +64,30 @@ const Register = () => {
         setLoading(true);
 
         try {
-            await authService.register({
-                firstName: formData.firstName,
-                lastName: formData.lastName,
+            // Updated to match the API request format
+            const response = await authService.register({
+                username: formData.username,
                 email: formData.email,
                 password: formData.password,
             });
 
-            navigate('/login', { state: { message: 'Registration successful! Please log in.' } });
+            // Store the token and user data in localStorage
+            if (response.token) {
+                localStorage.setItem('token', response.token);
+                localStorage.setItem('user', JSON.stringify({
+                    userId: response.userId,
+                    username: response.username,
+                    email: response.email,
+                    roles: response.roles
+                }));
+
+                // Redirect to dashboard instead of login page
+                navigate('/dashboard');
+            } else {
+                // If no token in response, show error
+                setServerError('Registration successful but authentication failed. Please try logging in.');
+                navigate('/login', { state: { message: 'Registration successful! Please log in.' } });
+            }
         } catch (err) {
             setServerError(err.response?.data?.message || 'Registration failed. Please try again.');
         } finally {
@@ -94,37 +105,20 @@ const Register = () => {
                 {serverError && <Alert severity="error" sx={{ mb: 2 }}>{serverError}</Alert>}
 
                 <Box component="form" onSubmit={handleSubmit} noValidate>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                autoComplete="given-name"
-                                name="firstName"
-                                required
-                                fullWidth
-                                id="firstName"
-                                label="First Name"
-                                autoFocus
-                                value={formData.firstName}
-                                onChange={handleChange}
-                                error={!!errors.firstName}
-                                helperText={errors.firstName}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                required
-                                fullWidth
-                                id="lastName"
-                                label="Last Name"
-                                name="lastName"
-                                autoComplete="family-name"
-                                value={formData.lastName}
-                                onChange={handleChange}
-                                error={!!errors.lastName}
-                                helperText={errors.lastName}
-                            />
-                        </Grid>
-                    </Grid>
+                    <TextField
+                        margin="normal"
+                        required
+                        fullWidth
+                        id="username"
+                        label="Username"
+                        name="username"
+                        autoComplete="username"
+                        autoFocus
+                        value={formData.username}
+                        onChange={handleChange}
+                        error={!!errors.username}
+                        helperText={errors.username}
+                    />
 
                     <TextField
                         margin="normal"
