@@ -51,41 +51,51 @@ function TaskEditForm({ editFormData, isSubmitting, onEditFormChange, onUpdateTa
 
                 <div className="form-row">
                     <div className="edit-form-group half-width">
-                        <label className="form-label" htmlFor="editDueDate">Due Date</label>
-                        <div className="input-with-icon">
+                        <label className="form-label field-label" htmlFor="editDueDate">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            Due Date
+                        </label>
+                        <div className="date-field-container">
                             <input
                                 type="date"
                                 id="editDueDate"
                                 name="dueDate"
                                 value={editFormData.dueDate}
                                 onChange={onEditFormChange}
-                                className="form-control"
+                                className="task-input"
                             />
-                            <svg className="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                <line x1="16" y1="2" x2="16" y2="6"></line>
-                                <line x1="8" y1="2" x2="8" y2="6"></line>
-                                <line x1="3" y1="10" x2="21" y2="10"></line>
-                            </svg>
                         </div>
+                        <div className="field-decoration">Select task deadline</div>
                     </div>
 
                     <div className="edit-form-group half-width">
-                        <label className="form-label" htmlFor="editPriority">Priority</label>
-                        <div className="priority-selector">
+                        <label className="form-label field-label" htmlFor="editPriority">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+                                <line x1="4" y1="22" x2="4" y2="15"></line>
+                            </svg>
+                            Priority
+                        </label>
+                        <div className="priority-field-wrapper">
+                            <div className={`priority-indicator ${editFormData.priority}`}></div>
                             <select
                                 id="editPriority"
                                 name="priority"
                                 value={editFormData.priority}
                                 onChange={onEditFormChange}
-                                className="form-control"
+                                className="task-select with-indicator"
                             >
                                 <option value="low">Low Priority</option>
                                 <option value="medium">Medium Priority</option>
                                 <option value="high">High Priority</option>
                             </select>
-                            <div className={`priority-indicator`}></div>
                         </div>
+                        <div className="field-decoration">Set task importance</div>
                     </div>
                 </div>
 
