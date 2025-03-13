@@ -32,7 +32,7 @@ const AppRoutes = () => {
       {/* Protected Routes - Only accessible when logged in */}
       <Route element={<ProtectedRoute isLoggedIn={isLoggedIn}><Outlet /></ProtectedRoute>}>
         <Route path="/" element={<Navigate to="/dashboard" />} />
-        <Route path="/dashboard" element={<Dashboard tasks={[]} setTasks={() => { }} />} />
+        <Route path="/dashboard" element={<Dashboard />} />
 
         {/* Task Routes */}
         <Route path="/tasks" element={<TasksList tasks={[]} />} />

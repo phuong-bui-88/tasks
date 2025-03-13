@@ -1,0 +1,45 @@
+.task-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.action-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+.edit-button {
+    background-color: #e8f4f8;
+    color: #0077b6;
+}
+
+.edit-button:hover {
+    background-color: #cce5ff;
+    transform: translateY(-2px);
+}
+
+.delete-button {
+    background-color: #ffebee;
+    color: #d32f2f;
+}
+
+.delete-button:hover {
+    background-color: #ffcdd2;
+    transform: translateY(-2px);
+}
+
+.action-icon {
+    width: 16px;
+    height: 16px;
+}

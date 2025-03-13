@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import UserProfileDropdown from './components/users/UserProfileDropdown';
+import { TaskProvider } from './contexts/TaskContext';
 import { UserProvider, useUser } from './contexts/UserContext';
 import AppRoutes from './routes/AppRoutes';
 
@@ -33,7 +34,9 @@ function App() {
     return (
         <BrowserRouter>
             <UserProvider>
-                <AppContent />
+                <TaskProvider>
+                    <AppContent />
+                </TaskProvider>
             </UserProvider>
         </BrowserRouter>
     );

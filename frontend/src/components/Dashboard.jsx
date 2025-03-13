@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { useTask } from '../contexts/TaskContext';
 import './Dashboard.css';
-import { createTask } from '../services/taskService';
+import TasksList from './tasks/TasksList';
 
 // Icons
 const CalendarIcon = () => (
@@ -19,15 +20,14 @@ const FlagIcon = () => (
     </svg>
 );
 
-function Dashboard({ tasks, setTasks }) {
+function Dashboard() {
+    const { tasks, isSubmitting, formError, handleCreateTask, setFormError } = useTask();
     const [formData, setFormData] = useState({
         taskTitle: '',
         description: '',
         dueDate: '',
         priority: 'medium'
     });
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [error, setError] = useState(null);
 
     // Get user initials for avatar
     const userInitials = "JS"; // Would normally come from user data
@@ -43,65 +43,17 @@ function Dashboard({ tasks, setTasks }) {
         setFormData({ ...formData, priority: value });
     };
 
-    const handleAddTask = (newTask) => {
-        setTasks([...tasks, newTask]);
-    };
-
     const handleTaskSubmit = async (event) => {
         event.preventDefault();
-        const { taskTitle, description, dueDate, priority } = formData;
-
-        if (taskTitle) {
-            setIsSubmitting(true);
-            setError(null);
-
-            try {
-                // Create task payload based on backend API requirements
-                const taskPayload = {
-                    title: taskTitle,
-                    description,
-                    dueDate: dueDate || null,
-                    priority,
-                    completed: false,
-                };
-
-                // Call the API to create the task
-                // The date formatting is now handled in the taskService
-                const createdTask = await createTask(taskPayload);
-
-                // Add the created task to the UI
-                handleAddTask(createdTask);
-
-                // Reset form
-                setFormData({
-                    taskTitle: '',
-                    description: '',
-                    dueDate: '',
-                    priority: 'medium'
-                });
-            } catch (error) {
-                console.error('Failed to create task:', error);
-                setError(error.userMessage || 'Failed to create task. Please try again.');
-            } finally {
-                setIsSubmitting(false);
-            }
-        }
-    };
-
-    // Format date to be more readable
-    const formatDate = (dateString) => {
-        if (!dateString) return "";
-        const options = { year: 'numeric', month: 'short', day: 'numeric' };
-        return new Date(dateString).toLocaleDateString(undefined, options);
-    };
-
-    // Get priority label with proper formatting
-    const getPriorityLabel = (priority) => {
-        switch (priority) {
-            case 'low': return 'Low Priority';
-            case 'medium': return 'Medium Priority';
-            case 'high': return 'High Priority';
-            default: return 'Medium Priority';
+        const result = await handleCreateTask(formData);
+        if (result.success) {
+            // Reset form
+            setFormData({
+                taskTitle: '',
+                description: '',
+                dueDate: '',
+                priority: 'medium'
+            });
         }
     };
 
@@ -130,7 +82,7 @@ function Dashboard({ tasks, setTasks }) {
 
                 <div className="task-manager">
                     <h3>Add New Task</h3>
-                    {error && <div className="error-message">{error}</div>}
+                    {formError && <div className="error-message">{formError}</div>}
                     <form onSubmit={handleTaskSubmit} className="task-form">
                         <div className="form-group">
                             <label htmlFor="taskTitle">Task Title</label>
@@ -213,30 +165,7 @@ function Dashboard({ tasks, setTasks }) {
                             <span className="task-count">{tasks.length}</span>
                         </div>
 
-                        {tasks.length === 0 ? (
-                            <p className="empty-task-message">You have no tasks yet. Add one using the form above!</p>
-                        ) : (
-                            <ul className="task-list">
-                                {tasks.map((task, index) => (
-                                    <li key={index} className={`task-item priority-${task.priority}`}>
-                                        <div className="task-header">
-                                            <h4>{task.title}</h4>
-                                            <span className={`priority-badge priority-${task.priority}`}>
-                                                {getPriorityLabel(task.priority)}
-                                            </span>
-                                        </div>
-                                        {task.description && <p className="task-description">{task.description}</p>}
-                                        <div className="task-meta">
-                                            {task.dueDate && (
-                                                <p className="task-due-date">
-                                                    <CalendarIcon /> {formatDate(task.dueDate)}
-                                                </p>
-                                            )}
-                                        </div>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
+                        <TasksList />
                     </div>
                 </div>
             </div>
