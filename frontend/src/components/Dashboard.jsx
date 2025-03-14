@@ -58,9 +58,11 @@ function Dashboard() {
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-shadow p-6 border border-gray-100 dark:border-gray-700">
-                        <div className="flex items-center mb-4">
+                <div className="lg:col-span-8">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-shadow border border-gray-100 dark:border-gray-700 overflow-hidden mb-6">
+                        <div className="flex items-center mb-4 p-6">
                             <div className="p-2 bg-green-100 dark:bg-green-900 rounded-lg mr-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -68,15 +70,15 @@ function Dashboard() {
                             </div>
                             <h2 className="text-xl font-bold text-gray-800 dark:text-white">Create New Task</h2>
                         </div>
-                        <CreateTaskForm
-                            isSubmitting={isSubmitting}
-                            formError={formError}
-                            handleCreateTask={handleCreateTask}
-                        />
+                        <div className="px-6 pb-6">
+                            <CreateTaskForm
+                                isSubmitting={isSubmitting}
+                                formError={formError}
+                                handleCreateTask={handleCreateTask}
+                            />
+                        </div>
                     </div>
-                </div>
 
-                <div className="lg:col-span-8">
                     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-shadow border border-gray-100 dark:border-gray-700 overflow-hidden">
                         <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 px-6 py-4">
                             <div className="flex items-center">
