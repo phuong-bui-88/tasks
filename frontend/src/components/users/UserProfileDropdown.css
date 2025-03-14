@@ -1,79 +1,25 @@
-.profile-dropdown {
-  position: relative;
-  display: inline-block;
-  width: 200px; /* Set a fixed width for the entire dropdown component */
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-}
+/* 
+   This file is now deprecated as we've moved to Tailwind CSS.
+   Equivalent Tailwind classes are used directly in the component markup.
+   
+   Below is a reference of the conversion:
 
-.profile-trigger {
-  display: flex;
-  align-items: center;
-  justify-content: space-between; /* Space elements evenly */
-  cursor: pointer;
-  padding: 10px 12px;
-  border-radius: 6px;
-  width: 100%; /* Take full width of parent */
-  box-sizing: border-box;
-  background-color: #f8f9fa;
-  border: 1px solid #e9ecef;
-  transition: all 0.2s ease;
-}
+   .profile-dropdown → relative inline-block w-52 font-[Segoe UI,Tahoma,Geneva,Verdana,sans-serif]
+   .profile-trigger → flex items-center justify-between cursor-pointer px-3 py-2.5 rounded-md w-full box-border bg-gray-50 border border-gray-200 transition-all duration-200
+   .profile-trigger:hover → hover:bg-gray-200 hover:border-gray-300
+   .user-avatar → w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center mr-2 flex-shrink-0
+   .profile-name → text-sm font-medium whitespace-nowrap overflow-hidden overflow-ellipsis flex-grow text-gray-800
+   .dropdown-arrow → ml-2 text-xs transition-transform duration-300 flex-shrink-0 text-gray-500
+   .dropdown-arrow.open → transform rotate-180
+   .dropdown-menu → absolute top-[calc(100%+5px)] right-0 bg-white shadow-lg rounded-md min-w-full w-full z-10 box-border overflow-hidden border border-gray-100 animate-dropdownFade
+   .dropdown-item → py-3 px-3.5 cursor-pointer transition-colors duration-200 flex items-center text-gray-700
+   .dropdown-item:hover → hover:bg-gray-50 hover:text-gray-900
+   .dropdown-icon → mr-2.5 text-base
+   .dropdown-divider → h-px bg-gray-200 my-1
+*/
 
-.profile-trigger:hover {
-  background-color: #e9ecef;
-  border-color: #dee2e6;
-}
-
-.user-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background-color: #e0e0e0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 8px;
-  flex-shrink: 0; /* Prevent avatar from shrinking */
-}
-
-.profile-name {
-  font-size: 14px;
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  flex-grow: 1; /* Allow name to take available space */
-  color: #343a40;
-}
-
-.dropdown-arrow {
-  margin-left: 8px;
-  font-size: 10px;
-  transition: transform 0.3s ease;
-  flex-shrink: 0; /* Prevent arrow from shrinking */
-  color: #6c757d;
-}
-
-.dropdown-arrow.open {
-  transform: rotate(180deg);
-}
-
-.dropdown-menu {
-  position: absolute;
-  top: calc(100% + 5px);
-  right: 0;
-  background-color: white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-radius: 6px;
-  min-width: 100%;
-  width: 100%;
-  z-index: 1000;
-  box-sizing: border-box;
-  overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  animation: dropdownFade 0.2s ease;
-}
-
+/* Add this to your tailwind.config.js */
+/* 
 @keyframes dropdownFade {
   from {
     opacity: 0;
@@ -84,28 +30,4 @@
     transform: translateY(0);
   }
 }
-
-.dropdown-item {
-  padding: 12px 15px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  display: flex;
-  align-items: center;
-  color: #495057;
-}
-
-.dropdown-item:hover {
-  background-color: #f8f9fa;
-  color: #212529;
-}
-
-.dropdown-icon {
-  margin-right: 10px;
-  font-size: 16px;
-}
-
-.dropdown-divider {
-  height: 1px;
-  background-color: #e9ecef;
-  margin: 4px 0;
-}
+*/

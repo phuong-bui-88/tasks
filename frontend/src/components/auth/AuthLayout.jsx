@@ -1,5 +1,4 @@
 import React from 'react';
-import { Container, Box, Typography, Paper } from '@mui/material';
 import { useLocation } from 'react-router-dom';
 
 /**
@@ -10,48 +9,27 @@ const AuthLayout = ({ children, title }) => {
     const message = location.state?.message;
 
     return (
-        <Container component="main" maxWidth="xs">
-            <Box
-                sx={{
-                    marginTop: 8,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                }}
-            >
-                <Paper elevation={3} sx={{ p: 4, width: '100%' }}>
-                    <Typography component="h1" variant="h5" align="center" gutterBottom>
+        <div className="max-w-md mx-auto px-4">
+            <div className="mt-16 flex flex-col items-center">
+                <div className="w-full bg-white rounded-lg shadow-lg p-8">
+                    <h1 className="text-xl font-medium text-center mb-4">
                         {title}
-                    </Typography>
+                    </h1>
 
                     {message && (
-                        <Typography
-                            variant="body2"
-                            sx={{
-                                mb: 2,
-                                backgroundColor: 'success.light',
-                                p: 1,
-                                borderRadius: 1,
-                                color: 'white'
-                            }}
-                        >
+                        <div className="mb-4 bg-green-100 p-3 rounded text-green-800">
                             {message}
-                        </Typography>
+                        </div>
                     )}
 
                     {children}
-                </Paper>
+                </div>
 
-                <Typography
-                    variant="caption"
-                    color="text.secondary"
-                    align="center"
-                    sx={{ mt: 4 }}
-                >
+                <div className="mt-8 text-xs text-gray-500 text-center">
                     Task Management System © {new Date().getFullYear()}
-                </Typography>
-            </Box>
-        </Container>
+                </div>
+            </div>
+        </div>
     );
 };
 

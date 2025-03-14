@@ -1,177 +1,39 @@
-/* Task List Styles */
-.task-list {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
+/* 
+   This file is now deprecated as we've moved to Tailwind CSS.
+   Equivalent Tailwind classes are used directly in the component markup.
+   
+   Below is a reference of the conversion:
 
-.task-item {
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-bottom: 16px;
-  padding: 20px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  border-left: 4px solid #ddd;
-}
-
-.task-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
-}
-
-/* Priority Indicators */
-.task-item.priority-low {
-  border-left-color: #8bc34a;
-}
-
-.task-item.priority-medium {
-  border-left-color: #ff9800;
-}
-
-.task-item.priority-high {
-  border-left-color: #f44336;
-}
-
-/* Task Content */
-.task-content {
-  position: relative;
-}
-
-.task-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 12px;
-}
-
-.task-header h4 {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #333;
-  flex: 1;
-}
-
-.task-description {
-  color: #666;
-  margin-bottom: 16px;
-  font-size: 0.95rem;
-  line-height: 1.5;
-}
-
-/* Task Metadata */
-.task-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-bottom: 16px;
-  font-size: 0.85rem;
-  color: #555;
-}
-
-.task-due-date,
-.task-status,
-.task-assignee {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-/* Priority Badge */
-.priority-badge {
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.priority-badge.priority-low {
-  background-color: rgba(139, 195, 74, 0.15);
-  color: #689f38;
-}
-
-.priority-badge.priority-medium {
-  background-color: rgba(255, 152, 0, 0.15);
-  color: #f57c00;
-}
-
-.priority-badge.priority-high {
-  background-color: rgba(244, 67, 54, 0.15);
-  color: #d32f2f;
-}
-
-/* Status Badge */
-.status-badge {
-  padding: 3px 6px;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  background-color: #e0e0e0;
-  color: #616161;
-}
-
-.status-badge-success {
-  background-color: rgba(76, 175, 80, 0.15);
-  color: #388e3c;
-}
-
-.status-badge-info {
-  background-color: rgba(33, 150, 243, 0.15);
-  color: #1976d2;
-}
-
-.status-badge-warning {
-  background-color: rgba(255, 193, 7, 0.15);
-  color: #ffa000;
-}
-
-.status-badge-secondary {
-  background-color: rgba(158, 158, 158, 0.15);
-  color: #757575;
-}
-
-/* Task Actions */
-.task-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-top: 16px;
-}
-
-/* Edit Task Form */
-.edit-task-form {
-  animation: fadeIn 0.3s ease;
-}
-
-.edit-task-form .card-header {
-  padding: 12px 16px;
-}
-
-.edit-task-form .card-body {
-  padding: 16px;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Empty State */
-.empty-state {
-  padding: 40px;
-  text-align: center;
-}
-
-.empty-state i {
-  font-size: 3rem;
-  color: #ccc;
-}
+   .task-list → list-none p-0 m-0
+   .task-item → bg-white rounded-lg shadow-sm mb-4 p-5 transition-all duration-200 border-l-4 border-l-gray-300
+   .task-item:hover → hover:-translate-y-0.5 hover:shadow-md
+   .task-item.priority-low → border-l-green-500
+   .task-item.priority-medium → border-l-orange-500
+   .task-item.priority-high → border-l-red-500
+   .task-content → relative
+   .task-header → flex justify-between items-start mb-3
+   .task-header h4 → m-0 text-lg font-semibold text-gray-800 flex-1
+   .task-description → text-gray-600 mb-4 text-[0.95rem] leading-normal
+   .task-meta → flex flex-wrap gap-4 mb-4 text-sm text-gray-600
+   .task-due-date, .task-status, .task-assignee → flex items-center gap-1
+   
+   .priority-badge → px-2 py-1 rounded text-xs font-semibold uppercase whitespace-nowrap
+   .priority-badge.priority-low → bg-green-100 text-green-700
+   .priority-badge.priority-medium → bg-orange-100 text-orange-700
+   .priority-badge.priority-high → bg-red-100 text-red-700
+   
+   .status-badge → py-0.5 px-1.5 rounded text-xs font-medium bg-gray-200 text-gray-700
+   .status-badge-success → bg-green-100 text-green-700
+   .status-badge-info → bg-blue-100 text-blue-700 
+   .status-badge-warning → bg-yellow-100 text-yellow-700
+   .status-badge-secondary → bg-gray-100 text-gray-700
+   
+   .task-actions → flex justify-end gap-2 mt-4
+   .edit-task-form → animate-fadeIn
+   
+   Add to tailwind.config.js:
+   @keyframes fadeIn {
+     from { opacity: 0; transform: translateY(-10px); }
+     to { opacity: 1; transform: translateY(0); }
+   }
+*/

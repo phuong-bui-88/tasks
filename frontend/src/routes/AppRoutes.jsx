@@ -4,7 +4,6 @@ import Login from "../components/auth/Login";
 import Register from "../components/auth/Register";
 import Dashboard from "../components/Dashboard";
 import NotFound from "../components/NotFound";
-import CreateTask from "../components/tasks/CreateTask";
 import EditTask from "../components/tasks/EditTask";
 import TasksList from "../components/tasks/TasksList";
 import ProfilePage from "../components/users/ProfilePage";
@@ -35,8 +34,7 @@ const AppRoutes = () => {
         <Route path="/dashboard" element={<Dashboard />} />
 
         {/* Task Routes */}
-        <Route path="/tasks" element={<TasksList tasks={[]} />} />
-        <Route path="/tasks/new" element={<CreateTask setTasks={() => { }} />} />
+        <Route path="/tasks" element={<TasksList />} />
         <Route path="/tasks/edit/:id" element={<EditTask tasks={[]} setTasks={() => { }} />} />
 
         {/* Profile Page Route */}

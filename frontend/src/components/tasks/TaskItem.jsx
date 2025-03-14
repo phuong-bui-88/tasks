@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { useTask } from '../../contexts/TaskContext';
 import TaskEditForm from './TaskEditForm';
-import './TaskItem.css';
 
 // Calendar icon component
 const CalendarIcon = () => (
@@ -48,15 +47,25 @@ function TaskItem({ task }) {
     // Get status badge class based on status
     const getStatusBadgeClass = (status) => {
         switch (status) {
-            case 'COMPLETED': return 'status-badge-success';
-            case 'IN_PROGRESS': return 'status-badge-info';
-            case 'TODO': return 'status-badge-warning';
-            default: return 'status-badge-secondary';
+            case 'COMPLETED': return 'bg-green-100 text-green-700';
+            case 'IN_PROGRESS': return 'bg-blue-100 text-blue-700';
+            case 'TODO': return 'bg-yellow-100 text-yellow-700';
+            default: return 'bg-gray-100 text-gray-700';
+        }
+    };
+
+    // Get priority border color
+    const getPriorityBorderClass = (priority) => {
+        switch (priority?.toLowerCase()) {
+            case 'low': return 'border-l-green-500';
+            case 'high': return 'border-l-red-500';
+            case 'medium': return 'border-l-orange-500';
+            default: return 'border-l-gray-300';
         }
     };
 
     return (
-        <li className={`task-item`}>
+        <li className={`bg-white rounded-lg shadow-sm mb-4 p-5 transition-all duration-200 border-l-4 ${getPriorityBorderClass(task.priority)}`}>
             {isEditing ? (
                 <TaskEditForm
                     editFormData={editFormData}
@@ -66,51 +75,54 @@ function TaskItem({ task }) {
                     onCancelEdit={handleCancelEdit}
                 />
             ) : (
-                <div className="task-content">
-                    <div className="task-header">
-                        <h4>{task.title}</h4>
-                        <span className={`priority-badge priority-${task.priority?.toLowerCase() || 'medium'}`}>
+                <div className="relative">
+                    <div className="flex justify-between items-start mb-3">
+                        <h4 className="m-0 text-lg font-semibold text-gray-800 flex-1">{task.title}</h4>
+                        <span className={`px-2 py-1 rounded text-xs font-semibold uppercase whitespace-nowrap ${task.priority?.toLowerCase() === 'low' ? 'bg-green-100 text-green-700' :
+                            task.priority?.toLowerCase() === 'high' ? 'bg-red-100 text-red-700' :
+                                'bg-orange-100 text-orange-700'
+                            }`}>
                             {getPriorityLabel(task.priority?.toLowerCase() || 'medium')}
                         </span>
                     </div>
 
-                    {task.description && <p className="task-description">{task.description}</p>}
+                    {task.description && <p className="text-gray-600 mb-4 text-[0.95rem] leading-normal">{task.description}</p>}
 
-                    <div className="task-meta">
+                    <div className="flex flex-wrap gap-4 mb-4 text-sm text-gray-600">
                         {task.dueDate && (
-                            <p className="task-due-date">
+                            <p className="flex items-center gap-1">
                                 <CalendarIcon /> {formatDate(task.dueDate)}
                             </p>
                         )}
                         {task.status && (
-                            <p className="task-status">
-                                Status: <span className={`status-badge ${getStatusBadgeClass(task.status)}`}>{task.status}</span>
+                            <p className="flex items-center gap-1">
+                                Status: <span className={`py-0.5 px-1.5 rounded text-xs font-medium ${getStatusBadgeClass(task.status)}`}>{task.status}</span>
                             </p>
                         )}
                         {task.assigneeEmail && (
-                            <p className="task-assignee">
-                                Assigned to: <span className="assignee">{task.assigneeEmail}</span>
+                            <p className="flex items-center gap-1">
+                                Assigned to: <span className="font-medium">{task.assigneeEmail}</span>
                             </p>
                         )}
                     </div>
 
-                    <div className="task-actions">
+                    <div className="flex justify-end gap-2 mt-4">
                         <button
-                            className="action-button edit-button"
+                            className="flex items-center px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded text-gray-700 text-sm transition-colors"
                             onClick={() => handleEditClick(task)}
                             aria-label="Edit task"
                         >
-                            <svg className="action-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <svg className="w-4 h-4 mr-1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M16.293 2.293a1 1 0 0 1 1.414 0l4 4a1 1 0 0 1 0 1.414l-13 13A1 1 0 0 1 8 21H4a1 1 0 0 1-1-1v-4a1 1 0 0 1 .293-.707l13-13zM5 17.586V19h1.414l12.293-12.293-1.414-1.414L5 17.586z" />
                             </svg>
                             <span>Edit</span>
                         </button>
                         <button
-                            className="action-button delete-button"
+                            className="flex items-center px-3 py-1.5 bg-red-50 hover:bg-red-100 rounded text-red-600 text-sm transition-colors"
                             onClick={() => handleDeleteTask(task.id)}
                             aria-label="Delete task"
                         >
-                            <svg className="action-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <svg className="w-4 h-4 mr-1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M19 7l-.867 12.142A2 2 0 0 1 16.138 21H7.862a2 2 0 0 1-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v3M4 7h16"
                                     strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
