@@ -13,7 +13,7 @@ const CalendarIcon = () => (
     </svg>
 );
 
-function TaskItem({ task }) {
+function TaskItem({ task, className = '' }) {
     const {
         editingTaskId,
         editFormData,
@@ -64,8 +64,17 @@ function TaskItem({ task }) {
         }
     };
 
+    // Active task styling
+    const isActive = className.includes('active-task');
+
     return (
-        <li className={`bg-white rounded-lg shadow-sm mb-4 p-5 transition-all duration-200 border-l-4 ${getPriorityBorderClass(task.priority)}`}>
+        <li
+            id={`task-${task.id}`}
+            className={`bg-white rounded-lg shadow-sm mb-4 p-5 transition-all duration-200 border-l-4 
+                ${getPriorityBorderClass(task.priority)} 
+                ${isActive ? 'ring-2 ring-indigo-400 dark:ring-indigo-600 ring-offset-1 transform scale-[1.02]' : ''}
+                ${className}`}
+        >
             {isEditing ? (
                 <TaskEditForm
                     editFormData={editFormData}
@@ -76,6 +85,12 @@ function TaskItem({ task }) {
                 />
             ) : (
                 <div className="relative">
+                    {/* Highlight indicator for active task */}
+                    {isActive && (
+                        <div className="absolute -right-2 -top-2 h-4 w-4 bg-indigo-500 rounded-full border-2 border-white" />
+                    )}
+
+                    {/* Existing task content */}
                     <div className="flex justify-between items-start mb-3">
                         <h4 className="m-0 text-lg font-semibold text-gray-800 flex-1">{task.title}</h4>
                         <span className={`px-2 py-1 rounded text-xs font-semibold uppercase whitespace-nowrap ${task.priority?.toLowerCase() === 'low' ? 'bg-green-100 text-green-700' :
@@ -136,7 +151,8 @@ function TaskItem({ task }) {
 }
 
 TaskItem.propTypes = {
-    task: PropTypes.object.isRequired
+    task: PropTypes.object.isRequired,
+    className: PropTypes.string
 };
 
 export default TaskItem;

@@ -2,8 +2,8 @@ import React from 'react';
 import { useTask } from '../../contexts/TaskContext';
 import TaskItem from './TaskItem';
 
-function TasksList() {
-  const { 
+function TasksList({ activeTaskId }) {
+  const {
     tasks,
     loading,
     error
@@ -42,7 +42,7 @@ function TasksList() {
   return (
     <ul className="task-list">
       {tasks.map((task) => (
-        <TaskItem key={task.id} task={task} />
+        <TaskItem key={task.id} task={task} className={task.id == activeTaskId ? 'active-task' : ''} />
       ))}
     </ul>
   );
