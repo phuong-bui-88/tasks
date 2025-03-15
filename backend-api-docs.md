@@ -399,7 +399,8 @@ Authorization: Bearer {token}
 {
   "title": "Implement user authentication",
   "description": "Add JWT authentication to the backend API",
-  "status": "TODO",
+  "startDate": "2023-11-30T09:00:00",
+  "status": 1, // 1 = PENDING, 2 = COMPLETED
   "priority": "HIGH",
   "dueDate": "2023-12-15T12:00:00",
   "assigneeEmail": "john.doe@example.com",
@@ -415,7 +416,8 @@ Authorization: Bearer {token}
   "id": 1,
   "title": "Implement user authentication",
   "description": "Add JWT authentication to the backend API",
-  "status": "TODO",
+  "startDate": "2023-11-30T09:00:00",
+  "status": 1,
   "priority": "HIGH",
   "createdAt": "2023-11-10T08:30:45",
   "updatedAt": "2023-11-10T08:30:45",
@@ -508,7 +510,8 @@ Authorization: Bearer {token}
   "id": 1,
   "title": "Implement user authentication",
   "description": "Add JWT authentication to the backend API",
-  "status": "TODO",
+  "startDate": "2023-11-30T09:00:00",
+  "status": 1,
   "priority": "HIGH",
   "createdAt": "2023-11-10T08:30:45",
   "updatedAt": "2023-11-10T08:30:45",
@@ -575,7 +578,8 @@ Authorization: Bearer {token}
     "id": 1,
     "title": "Implement user authentication",
     "description": "Add JWT authentication to the backend API",
-    "status": "TODO",
+    "startDate": "2023-11-30T09:00:00",
+    "status": 1,
     "priority": "HIGH",
     "createdAt": "2023-11-10T08:30:45",
     "updatedAt": "2023-11-10T08:30:45",
@@ -589,7 +593,8 @@ Authorization: Bearer {token}
     "id": 2,
     "title": "Design database schema",
     "description": "Create ERD and implement database tables",
-    "status": "IN_PROGRESS",
+    "startDate": "2023-11-01T09:00:00",
+    "status": 2,
     "priority": "MEDIUM",
     "createdAt": "2023-11-09T14:20:30",
     "updatedAt": "2023-11-10T10:15:45",
@@ -632,7 +637,7 @@ Retrieves all tasks with the specified status.
 #### Request
 
 ```http
-GET /api/tasks/status/IN_PROGRESS
+GET /api/tasks/status/1
 Authorization: Bearer {token}
 ```
 
@@ -645,7 +650,7 @@ Authorization: Bearer {token}
     "id": 2,
     "title": "Design database schema",
     "description": "Create ERD and implement database tables",
-    "status": "IN_PROGRESS",
+    "status": 1,
     "priority": "MEDIUM",
     "createdAt": "2023-11-09T14:20:30",
     "updatedAt": "2023-11-10T10:15:45",
@@ -659,7 +664,7 @@ Authorization: Bearer {token}
     "id": 3,
     "title": "Create user interface mockups",
     "description": "Design UI mockups for the task management system",
-    "status": "IN_PROGRESS",
+    "status": 1,
     "priority": "HIGH",
     "createdAt": "2023-11-08T11:45:10",
     "updatedAt": "2023-11-09T16:30:20",
@@ -676,10 +681,14 @@ Authorization: Bearer {token}
 
 The get tasks by status endpoint is implemented in the `TaskController` class and uses the `TaskService` for filtering tasks by status:
 
-1. Validates the status parameter
+1. Validates the status parameter (must be 1 or 2)
 2. Retrieves tasks with the specified status from the database
 3. Maps each task entity to a DTO
 4. Returns a list of filtered task information
+
+The get tasks by status endpoint accepts the status as a path variable:
+- 1 - PENDING tasks (not yet completed)
+- 2 - COMPLETED tasks
 
 #### Related Files
 
@@ -691,7 +700,7 @@ The get tasks by status endpoint is implemented in the `TaskController` class an
 #### Sample cURL
 
 ```bash
-curl -X GET http://localhost:8080/api/tasks/status/IN_PROGRESS \
+curl -X GET http://localhost:8080/api/tasks/status/1 \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 ```
 
@@ -710,7 +719,8 @@ Authorization: Bearer {token}
 {
   "title": "Implement user authentication and authorization",
   "description": "Add JWT authentication and role-based authorization to the backend API",
-  "status": "IN_PROGRESS",
+  "startDate": "2023-12-01T09:00:00",
+  "status": 2, // Status changed from PENDING (1) to COMPLETED (2)
   "priority": "HIGH",
   "dueDate": "2023-12-20T12:00:00",
   "assigneeEmail": "john.doe@example.com",
@@ -726,7 +736,8 @@ Authorization: Bearer {token}
   "id": 1,
   "title": "Implement user authentication and authorization",
   "description": "Add JWT authentication and role-based authorization to the backend API",
-  "status": "IN_PROGRESS",
+  "startDate": "2023-12-01T09:00:00",
+  "status": 2,
   "priority": "HIGH",
   "createdAt": "2023-11-10T08:30:45",
   "updatedAt": "2023-11-12T14:25:30",
@@ -928,7 +939,7 @@ Authorization: Bearer {token}
     "id": 1,
     "title": "Implement user authentication",
     "description": "Add JWT authentication to the backend API",
-    "status": "TODO",
+    "status": 1,
     "priority": "HIGH",
     "createdAt": "2023-11-10T08:30:45",
     "updatedAt": "2023-11-10T08:30:45",

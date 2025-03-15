@@ -28,7 +28,7 @@ public class TaskServiceImpl implements TaskService {
     public TaskDTO createTask(TaskDTO taskDTO, User author) {
         Task task = taskDTO.toEntity();
         if (task.getStatus() == null) {
-            task.setStatus(Task.TaskStatus.TODO);
+            task.setStatus(Task.TaskStatus.PENDING);
         }
         task.setReminderSent(false);
         task.setAuthor(author);
@@ -96,7 +96,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public List<TaskDTO> getTasksDueForReminder() {
         LocalDateTime now = LocalDateTime.now();
-        return taskRepository.findByDueDateBeforeAndStatusNotAndReminderSentFalse(now.plusDays(1), Task.TaskStatus.DONE)
+        return taskRepository.findByDueDateBeforeAndStatusNotAndReminderSentFalse(now.plusDays(1), Task.TaskStatus.COMPLETED)
                 .stream()
                 .map(TaskDTO::fromEntity)
                 .collect(Collectors.toList());

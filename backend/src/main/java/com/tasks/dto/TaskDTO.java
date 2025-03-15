@@ -7,6 +7,7 @@ public class TaskDTO {
     private Long id;
     private String title;
     private String description;
+    private LocalDateTime startDate;
     private LocalDateTime dueDate;
     private Task.TaskStatus status;
     private String assigneeEmail;
@@ -20,6 +21,7 @@ public class TaskDTO {
         this.id = task.getId();
         this.title = task.getTitle();
         this.description = task.getDescription();
+        this.startDate = task.getStartDate();
         this.dueDate = task.getDueDate();
         this.status = task.getStatus();
         this.assigneeEmail = task.getAssigneeEmail();
@@ -39,6 +41,7 @@ public class TaskDTO {
         task.setId(this.id);
         task.setTitle(this.title);
         task.setDescription(this.description);
+        task.setStartDate(this.startDate);
         task.setDueDate(this.dueDate);
         task.setStatus(this.status);
         task.setAssigneeEmail(this.assigneeEmail);
@@ -69,6 +72,14 @@ public class TaskDTO {
     
     public void setDescription(String description) {
         this.description = description;
+    }
+    
+    public LocalDateTime getStartDate() {
+        return startDate;
+    }
+    
+    public void setStartDate(LocalDateTime startDate) {
+        this.startDate = startDate;
     }
     
     public LocalDateTime getDueDate() {

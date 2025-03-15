@@ -1,10 +1,19 @@
 package com.tasks.model;
 
-import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -19,9 +28,11 @@ public class Task {
     @Column(length = 1000)
     private String description;
     
+    private LocalDateTime startDate;
+    
     private LocalDateTime dueDate;
     
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     private TaskStatus status;
     
     private String assigneeEmail;
@@ -33,7 +44,27 @@ public class Task {
     private User author;
     
     public enum TaskStatus {
-        TODO, IN_PROGRESS, DONE
+        PENDING(1),    // Default status
+        COMPLETED(2);  // Replaces both IN_PROGRESS and DONE
+        
+        private final int id;
+        
+        TaskStatus(int id) {
+            this.id = id;
+        }
+        
+        public int getId() {
+            return id;
+        }
+        
+        public static TaskStatus fromId(int id) {
+            for (TaskStatus status : values()) {
+                if (status.getId() == id) {
+                    return status;
+                }
+            }
+            throw new IllegalArgumentException("Invalid task status id: " + id);
+        }
     }
     
     // Explicit getters and setters in case Lombok isn't working correctly
@@ -59,6 +90,14 @@ public class Task {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public LocalDateTime getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDateTime startDate) {
+        this.startDate = startDate;
     }
 
     public LocalDateTime getDueDate() {
