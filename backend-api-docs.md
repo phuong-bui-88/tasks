@@ -482,7 +482,7 @@ curl -X POST http://localhost:8080/api/tasks \
   -d '{
     "title": "Implement user authentication",
     "description": "Add JWT authentication to the backend API",
-    "status": "TODO",
+    "status": 1,
     "priority": "HIGH",
     "dueDate": "2023-12-15T12:00:00",
     "assigneeEmail": "john.doe@example.com",

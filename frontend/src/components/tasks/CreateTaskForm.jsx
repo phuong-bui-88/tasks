@@ -18,12 +18,21 @@ const FlagIcon = () => (
     </svg>
 );
 
+const StatusIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+    </svg>
+);
+
 function CreateTaskForm({ isSubmitting, formError, handleCreateTask }) {
     const [formData, setFormData] = useState({
         taskTitle: '',
         description: '',
+        startDate: '',
         dueDate: '',
-        priority: 'medium'
+        priority: 'MEDIUM',
+        status: 1 // Default status is 1 (PENDING)
     });
 
     const handleInputChange = (event) => {
@@ -34,19 +43,48 @@ function CreateTaskForm({ isSubmitting, formError, handleCreateTask }) {
     // Handle priority change with additional UI feedback
     const handlePriorityChange = (event) => {
         const { value } = event.target;
-        setFormData({ ...formData, priority: value });
+        setFormData({ ...formData, priority: value.toUpperCase() }); // Ensure priority is uppercase for API
+    };
+
+    // Handle status change with numeric values for API
+    const handleStatusChange = (event) => {
+        const { value } = event.target;
+        let numericStatus;
+
+        switch (value) {
+            case "PENDING":
+                numericStatus = 1;
+                break;
+            case "COMPLETED":
+                numericStatus = 2;
+                break;
+            default:
+                numericStatus = 1;
+        }
+
+        setFormData({ ...formData, status: numericStatus });
     };
 
     const handleTaskSubmit = async (event) => {
         event.preventDefault();
-        const result = await handleCreateTask(formData);
+
+        // Format dates for API
+        const formattedData = {
+            ...formData,
+            startDate: formData.startDate ? `${formData.startDate}T00:00:00` : null,
+            dueDate: formData.dueDate ? `${formData.dueDate}T00:00:00` : null
+        };
+
+        const result = await handleCreateTask(formattedData);
         if (result.success) {
             // Reset form
             setFormData({
                 taskTitle: '',
                 description: '',
+                startDate: '',
                 dueDate: '',
-                priority: 'medium'
+                priority: 'MEDIUM',
+                status: 1
             });
         }
     };
@@ -85,6 +123,24 @@ function CreateTaskForm({ isSubmitting, formError, handleCreateTask }) {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
+                        <label htmlFor="startDate" className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
+                            <CalendarIcon /> Start Date
+                        </label>
+                        <div className="relative">
+                            <input
+                                type="date"
+                                id="startDate"
+                                name="startDate"
+                                value={formData.startDate}
+                                onChange={handleInputChange}
+                                required
+                                className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition-all duration-200"
+                            />
+                        </div>
+                        <div className="text-xs text-gray-500 mt-1">When will you start this task</div>
+                    </div>
+
+                    <div>
                         <label htmlFor="dueDate" className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
                             <CalendarIcon /> Due Date
                         </label>
@@ -95,19 +151,22 @@ function CreateTaskForm({ isSubmitting, formError, handleCreateTask }) {
                                 name="dueDate"
                                 value={formData.dueDate}
                                 onChange={handleInputChange}
+                                required
                                 className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition-all duration-200"
                             />
                         </div>
                         <div className="text-xs text-gray-500 mt-1">Select task deadline</div>
                     </div>
+                </div>
 
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
                         <label htmlFor="priority" className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
                             <FlagIcon /> Priority Level
                         </label>
                         <div className="relative">
-                            <div className={`absolute top-1/2 transform -translate-y-1/2 left-4 w-3 h-3 rounded-full ${formData.priority === 'low' ? 'bg-green-500' :
-                                    formData.priority === 'medium' ? 'bg-yellow-500' : 'bg-red-500'
+                            <div className={`absolute top-1/2 transform -translate-y-1/2 left-4 w-3 h-3 rounded-full ${formData.priority === 'LOW' ? 'bg-green-500' :
+                                formData.priority === 'MEDIUM' ? 'bg-yellow-500' : 'bg-red-500'
                                 }`}></div>
                             <select
                                 id="priority"
@@ -116,9 +175,9 @@ function CreateTaskForm({ isSubmitting, formError, handleCreateTask }) {
                                 onChange={handlePriorityChange}
                                 className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition-all duration-200 appearance-none"
                             >
-                                <option value="low">Low Priority</option>
-                                <option value="medium">Medium Priority</option>
-                                <option value="high">High Priority</option>
+                                <option value="LOW">Low Priority</option>
+                                <option value="MEDIUM">Medium Priority</option>
+                                <option value="HIGH">High Priority</option>
                             </select>
                             <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                                 <svg className="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
@@ -128,14 +187,38 @@ function CreateTaskForm({ isSubmitting, formError, handleCreateTask }) {
                         </div>
                         <div className="text-xs text-gray-500 mt-1">Set task importance</div>
                     </div>
+
+                    <div>
+                        <label htmlFor="status" className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
+                            <StatusIcon /> Status
+                        </label>
+                        <div className="relative">
+                            <select
+                                id="status"
+                                name="status"
+                                value={formData.status === 1 ? "PENDING" : "COMPLETED"}
+                                onChange={handleStatusChange}
+                                className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition-all duration-200 appearance-none"
+                            >
+                                <option value="PENDING">Pending</option>
+                                <option value="COMPLETED">Completed</option>
+                            </select>
+                            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                <svg className="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div className="text-xs text-gray-500 mt-1">Current task status</div>
+                    </div>
                 </div>
 
                 <div className="pt-4 mt-2">
                     <button
                         type="submit"
                         className={`w-full py-2.5 px-4 rounded-lg text-white font-medium shadow-sm transition-all duration-200 ${isSubmitting
-                                ? 'bg-blue-400 cursor-not-allowed'
-                                : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
+                            ? 'bg-blue-400 cursor-not-allowed'
+                            : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
                             }`}
                         disabled={isSubmitting}
                     >

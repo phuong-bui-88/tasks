@@ -7,7 +7,8 @@ function EditTask({ tasks, setTasks }) {
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [status, setStatus] = useState('PENDING');
+  const [status, setStatus] = useState(1); // Default to 1 (PENDING)
+  const [startDate, setStartDate] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [assigneeEmail, setAssigneeEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -24,7 +25,8 @@ function EditTask({ tasks, setTasks }) {
 
     setTitle(task.title);
     setDescription(task.description || '');
-    setStatus(task.status);
+    setStatus(task.status || 1);
+    setStartDate(task.startDate ? task.startDate.substring(0, 10) : '');
     setDueDate(task.dueDate ? task.dueDate.substring(0, 10) : '');
     setAssigneeEmail(task.assigneeEmail || '');
   }, [id, tasks]);
@@ -35,6 +37,10 @@ function EditTask({ tasks, setTasks }) {
     setError(null);
 
     try {
+      // Format dates for API
+      const formattedStartDate = startDate ? `${startDate}T00:00:00` : null;
+      const formattedDueDate = dueDate ? `${dueDate}T00:00:00` : null;
+
       const response = await fetch(`http://localhost:8080/api/tasks/${id}`, {
         method: 'PUT',
         headers: {
@@ -44,8 +50,9 @@ function EditTask({ tasks, setTasks }) {
         body: JSON.stringify({
           title,
           description,
-          status,
-          dueDate: dueDate || null,
+          startDate: formattedStartDate,
+          status: parseInt(status), // Ensure numeric status
+          dueDate: formattedDueDate,
           assigneeEmail: assigneeEmail || null,
         }),
       });
@@ -107,17 +114,15 @@ function EditTask({ tasks, setTasks }) {
         </div>
 
         <div className="mb-3">
-          <label htmlFor="status" className="form-label">Status</label>
-          <select
+          <label htmlFor="startDate" className="form-label">Start Date</label>
+          <input
+            type="date"
             className="form-control"
-            id="status"
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-          >
-            <option value="PENDING">Pending</option>
-            <option value="IN_PROGRESS">In Progress</option>
-            <option value="COMPLETED">Completed</option>
-          </select>
+            id="startDate"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            required
+          />
         </div>
 
         <div className="mb-3">
@@ -128,7 +133,21 @@ function EditTask({ tasks, setTasks }) {
             id="dueDate"
             value={dueDate}
             onChange={(e) => setDueDate(e.target.value)}
+            required
           />
+        </div>
+
+        <div className="mb-3">
+          <label htmlFor="status" className="form-label">Status</label>
+          <select
+            className="form-control"
+            id="status"
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+          >
+            <option value="1">Pending</option>
+            <option value="2">Completed</option>
+          </select>
         </div>
 
         <div className="mb-3">
