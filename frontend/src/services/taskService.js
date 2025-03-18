@@ -48,6 +48,7 @@ export const createTask = async (taskData) => {
         // Format dates before sending to API
         const formattedTaskData = {
             ...taskData,
+            startDate: formatDateForApi(taskData.startDate),
             dueDate: formatDateForApi(taskData.dueDate),
             reminderDate: formatDateForApi(taskData.reminderDate)
         };
@@ -65,6 +66,7 @@ export const updateTask = async (id, taskData) => {
         // Format dates before sending to API
         const formattedTaskData = {
             ...taskData,
+            startDate: formatDateForApi(taskData.startDate),
             dueDate: formatDateForApi(taskData.dueDate),
             reminderDate: formatDateForApi(taskData.reminderDate)
         };

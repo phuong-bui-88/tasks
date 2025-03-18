@@ -26,41 +26,6 @@ function TaskEditForm({ editFormData, isSubmitting, onEditFormChange, onUpdateTa
         }
     }, []);
 
-    // Keep these functions for handling the values even though we're removing the UI elements
-    const getStatusDisplayValue = (numericStatus) => {
-        switch (parseInt(numericStatus)) {
-            case 1: return "PENDING";
-            case 2: return "COMPLETED";
-            default: return "PENDING";
-        }
-    };
-
-    const handleStatusChange = (e) => {
-        const displayValue = e.target.value;
-        let numericValue;
-
-        switch (displayValue) {
-            case "PENDING":
-                numericValue = 1;
-                break;
-            case "COMPLETED":
-                numericValue = 2;
-                break;
-            default:
-                numericValue = 1;
-        }
-
-        // Create a synthetic event to pass to the parent handler
-        const syntheticEvent = {
-            target: {
-                name: 'status',
-                value: numericValue
-            }
-        };
-
-        onEditFormChange(syntheticEvent);
-    };
-
     return (
         <div className="bg-white rounded-lg p-5 shadow-lg animate-fadeIn border border-gray-100">
             <div className="flex justify-between items-center mb-4 border-b pb-3">

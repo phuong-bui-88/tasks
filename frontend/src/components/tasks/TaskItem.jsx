@@ -34,16 +34,6 @@ function TaskItem({ task, className = '' }) {
         return new Date(dateString).toLocaleDateString(undefined, options);
     };
 
-    // Get priority label with proper formatting
-    const getPriorityLabel = (priority) => {
-        switch (priority?.toUpperCase()) {
-            case 'LOW': return 'Low Priority';
-            case 'MEDIUM': return 'Medium Priority';
-            case 'HIGH': return 'High Priority';
-            default: return 'Medium Priority';
-        }
-    };
-
     // Get status badge class based on status
     const getStatusBadgeClass = (status) => {
         // Handle numeric status values from the API
@@ -66,16 +56,6 @@ function TaskItem({ task, className = '' }) {
         }
     };
 
-    // Get priority border color
-    const getPriorityBorderClass = (priority) => {
-        switch (priority?.toUpperCase()) {
-            case 'LOW': return 'border-l-green-500';
-            case 'HIGH': return 'border-l-red-500';
-            case 'MEDIUM': return 'border-l-orange-500';
-            default: return 'border-l-gray-300';
-        }
-    };
-
     // Active task styling
     const isActive = className.includes('active-task');
 
@@ -83,7 +63,7 @@ function TaskItem({ task, className = '' }) {
         <li
             id={`task-${task.id}`}
             className={`bg-white rounded-lg shadow-sm mb-4 p-5 transition-all duration-200 border-l-4 
-                ${getPriorityBorderClass(task.priority)} 
+                border-l-gray-300
                 ${isActive ? 'ring-2 ring-indigo-400 dark:ring-indigo-600 ring-offset-1 transform scale-[1.02]' : ''}
                 ${className}`}
         >
@@ -105,12 +85,6 @@ function TaskItem({ task, className = '' }) {
                     {/* Task content */}
                     <div className="flex justify-between items-start mb-3">
                         <h4 className="m-0 text-lg font-semibold text-gray-800 flex-1">{task.title}</h4>
-                        <span className={`px-2 py-1 rounded text-xs font-semibold uppercase whitespace-nowrap ${task.priority?.toUpperCase() === 'LOW' ? 'bg-green-100 text-green-700' :
-                            task.priority?.toUpperCase() === 'HIGH' ? 'bg-red-100 text-red-700' :
-                                'bg-orange-100 text-orange-700'
-                            }`}>
-                            {getPriorityLabel(task.priority || 'MEDIUM')}
-                        </span>
                     </div>
 
                     {task.description && <p className="text-gray-600 mb-4 text-[0.95rem] leading-normal">{task.description}</p>}

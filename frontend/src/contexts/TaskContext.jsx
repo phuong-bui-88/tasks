@@ -40,7 +40,7 @@ export const TaskProvider = ({ children }) => {
 
     // Function to handle task creation
     const handleCreateTask = async (formData) => {
-        const { taskTitle, description, dueDate } = formData;
+        const { taskTitle, description, dueDate, startDate } = formData;
 
         if (taskTitle) {
             setIsSubmitting(true);
@@ -51,9 +51,9 @@ export const TaskProvider = ({ children }) => {
                 const taskPayload = {
                     title: taskTitle,
                     description,
+                    startDate: startDate || null,
                     dueDate: dueDate || null,
                     status: 1 // Default status is 1 (PENDING)
-                    // completed field removed
                 };
 
                 // Call the API to create the task
@@ -80,6 +80,7 @@ export const TaskProvider = ({ children }) => {
         setEditFormData({
             title: task.title,
             description: task.description || '',
+            startDate: task.startDate ? new Date(task.startDate).toISOString().split('T')[0] : '',
             dueDate: task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : '',
             status: task.status || 'TODO'
         });
@@ -112,6 +113,7 @@ export const TaskProvider = ({ children }) => {
             const taskPayload = {
                 title: editFormData.title,
                 description: editFormData.description,
+                startDate: editFormData.startDate || null,
                 dueDate: editFormData.dueDate || null,
                 status: editFormData.status
             };

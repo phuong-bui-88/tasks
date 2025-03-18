@@ -23,37 +23,12 @@ function CreateTaskForm({ isSubmitting, formError, handleCreateTask }) {
         description: '',
         startDate: getTodayDateString(), // Default to current date
         dueDate: getTodayDateString(), // Default to current date
-        priority: 'MEDIUM', // Still keeping default values for API
         status: 1 // Default status is 1 (PENDING)
     });
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
         setFormData({ ...formData, [name]: value });
-    };
-
-    // We'll keep these handlers but they won't be used directly in the UI
-    const handlePriorityChange = (event) => {
-        const { value } = event.target;
-        setFormData({ ...formData, priority: value.toUpperCase() });
-    };
-
-    const handleStatusChange = (event) => {
-        const { value } = event.target;
-        let numericStatus;
-
-        switch (value) {
-            case "PENDING":
-                numericStatus = 1;
-                break;
-            case "COMPLETED":
-                numericStatus = 2;
-                break;
-            default:
-                numericStatus = 1;
-        }
-
-        setFormData({ ...formData, status: numericStatus });
     };
 
     const handleTaskSubmit = async (event) => {
@@ -74,7 +49,6 @@ function CreateTaskForm({ isSubmitting, formError, handleCreateTask }) {
                 description: '',
                 startDate: getTodayDateString(), // Default to current date
                 dueDate: getTodayDateString(), // Default to current date
-                priority: 'MEDIUM',
                 status: 1
             });
         }

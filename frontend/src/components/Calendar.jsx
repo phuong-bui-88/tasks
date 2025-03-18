@@ -104,14 +104,9 @@ function Calendar({ tasks, scrollToTask }) {
         return date.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
     };
 
-    // Get appropriate style classes based on priority
-    const getPriorityColor = (priority) => {
-        switch (priority?.toLowerCase()) {
-            case 'high': return 'bg-red-500';
-            case 'medium': return 'bg-orange-500';
-            case 'low': return 'bg-green-500';
-            default: return 'bg-gray-400';
-        }
+    // Get appropriate style classes - use a consistent color instead of priority-based
+    const getTaskDotColor = () => {
+        return 'bg-indigo-500';
     };
 
     // Get task count for a specific date
@@ -221,7 +216,7 @@ function Calendar({ tasks, scrollToTask }) {
                                                 {tasksByDate[dateKey].slice(0, 4).map((task, i) => (
                                                     <div
                                                         key={task.id || i}
-                                                        className={`w-1.5 h-1.5 rounded-full cursor-pointer ${getPriorityColor(task.priority)}`}
+                                                        className={`w-1.5 h-1.5 rounded-full cursor-pointer ${getTaskDotColor()}`}
                                                         onClick={() => scrollToTask(task.id)}
                                                         title={task.title}
                                                     />
