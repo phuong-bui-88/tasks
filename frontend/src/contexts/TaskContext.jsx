@@ -15,7 +15,6 @@ export const TaskProvider = ({ children }) => {
         title: '',
         description: '',
         dueDate: '',
-        priority: '',
         status: ''
     });
 
@@ -41,7 +40,7 @@ export const TaskProvider = ({ children }) => {
 
     // Function to handle task creation
     const handleCreateTask = async (formData) => {
-        const { taskTitle, description, dueDate, priority } = formData;
+        const { taskTitle, description, dueDate } = formData;
 
         if (taskTitle) {
             setIsSubmitting(true);
@@ -53,8 +52,8 @@ export const TaskProvider = ({ children }) => {
                     title: taskTitle,
                     description,
                     dueDate: dueDate || null,
-                    priority,
-                    completed: false,
+                    status: 1 // Default status is 1 (PENDING)
+                    // completed field removed
                 };
 
                 // Call the API to create the task
@@ -82,7 +81,6 @@ export const TaskProvider = ({ children }) => {
             title: task.title,
             description: task.description || '',
             dueDate: task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : '',
-            priority: task.priority?.toLowerCase() || 'medium',
             status: task.status || 'TODO'
         });
     };
@@ -94,7 +92,6 @@ export const TaskProvider = ({ children }) => {
             title: '',
             description: '',
             dueDate: '',
-            priority: 'medium',
             status: 'TODO'
         });
     };
@@ -116,7 +113,6 @@ export const TaskProvider = ({ children }) => {
                 title: editFormData.title,
                 description: editFormData.description,
                 dueDate: editFormData.dueDate || null,
-                priority: editFormData.priority,
                 status: editFormData.status
             };
 

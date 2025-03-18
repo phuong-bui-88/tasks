@@ -3,7 +3,7 @@ import React from 'react';
 
 function TaskEditForm({ editFormData, isSubmitting, onEditFormChange, onUpdateTask, onCancelEdit }) {
 
-    // Convert numeric status to display value
+    // Keep these functions for handling the values even though we're removing the UI elements
     const getStatusDisplayValue = (numericStatus) => {
         switch (parseInt(numericStatus)) {
             case 1: return "PENDING";
@@ -12,7 +12,6 @@ function TaskEditForm({ editFormData, isSubmitting, onEditFormChange, onUpdateTa
         }
     };
 
-    // Handle status change with appropriate numeric values for API
     const handleStatusChange = (e) => {
         const displayValue = e.target.value;
         let numericValue;
@@ -132,60 +131,7 @@ function TaskEditForm({ editFormData, isSubmitting, onEditFormChange, onUpdateTa
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div>
-                        <label className="flex items-center text-sm font-semibold text-gray-700 mb-1.5" htmlFor="editPriority">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2 text-blue-500">
-                                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
-                                <line x1="4" y1="22" x2="4" y2="15"></line>
-                            </svg>
-                            Priority
-                        </label>
-                        <div className="relative">
-                            <div className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-3 h-3 rounded-full ${editFormData.priority === 'low' ? 'bg-green-500' :
-                                editFormData.priority === 'high' ? 'bg-red-500' : 'bg-yellow-500'
-                                }`}></div>
-                            <select
-                                id="editPriority"
-                                name="priority"
-                                value={editFormData.priority}
-                                onChange={onEditFormChange}
-                                className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition-all duration-200 appearance-none"
-                            >
-                                <option value="low">Low Priority</option>
-                                <option value="medium">Medium Priority</option>
-                                <option value="high">High Priority</option>
-                            </select>
-                            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                <svg className="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                                </svg>
-                            </div>
-                        </div>
-                        <p className="mt-1 text-xs text-gray-500">Set task importance</p>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1.5" htmlFor="editStatus">Status</label>
-                        <div className="relative">
-                            <select
-                                id="editStatus"
-                                name="status"
-                                value={getStatusDisplayValue(editFormData.status)}
-                                onChange={handleStatusChange}
-                                className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition-all duration-200 appearance-none"
-                            >
-                                <option value="PENDING">Pending</option>
-                                <option value="COMPLETED">Completed</option>
-                            </select>
-                            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                <svg className="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {/* Removed Priority and Status UI sections */}
 
                 <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-100">
                     <button
