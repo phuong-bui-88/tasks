@@ -9,7 +9,6 @@
 - [x] Update CreateTaskForm with status dropdown (mapped to 1=PENDING, 2=COMPLETED)
 - [x] Update TaskItem component to display start date
 - [x] Update TaskItem to properly display numeric status values
-- [ ] Update EditTask component to include start date field
 - [ ] Test form submissions with new fields
 - [ ] Verify API integration with updated fields
 

@@ -1,7 +1,30 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect } from 'react';
+
+// Function to get today's date in YYYY-MM-DD format
+const getTodayDateString = () => {
+    const today = new Date();
+    return today.toISOString().split('T')[0]; // Returns YYYY-MM-DD
+};
 
 function TaskEditForm({ editFormData, isSubmitting, onEditFormChange, onUpdateTask, onCancelEdit }) {
+    // Set default dates if not provided
+    useEffect(() => {
+        const todayDate = getTodayDateString();
+
+        // Check if dates are missing and set defaults if needed
+        if (!editFormData.startDate) {
+            onEditFormChange({
+                target: { name: 'startDate', value: todayDate }
+            });
+        }
+
+        if (!editFormData.dueDate) {
+            onEditFormChange({
+                target: { name: 'dueDate', value: todayDate }
+            });
+        }
+    }, []);
 
     // Keep these functions for handling the values even though we're removing the UI elements
     const getStatusDisplayValue = (numericStatus) => {

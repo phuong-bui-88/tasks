@@ -1,5 +1,5 @@
-import React, { useMemo, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import React, { useEffect, useMemo, useState } from 'react';
 
 function Calendar({ tasks, scrollToTask }) {
     // State for tracking current month/year
@@ -168,8 +168,8 @@ function Calendar({ tasks, scrollToTask }) {
             {/* Calendar Grid - Super Compact Version */}
             <div className="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
                 <div className="grid grid-cols-7 bg-indigo-50 dark:bg-indigo-900/20 border-b border-gray-200 dark:border-gray-700">
-                    {weekdays.map(day => (
-                        <div key={day} className="text-center py-0.5 text-[8px] font-medium text-indigo-600 dark:text-indigo-400">
+                    {weekdays.map((day, index) => (
+                        <div key={`day-${index}`} className="text-center py-0.5 text-[8px] font-medium text-indigo-600 dark:text-indigo-400">
                             {day}
                         </div>
                     ))}

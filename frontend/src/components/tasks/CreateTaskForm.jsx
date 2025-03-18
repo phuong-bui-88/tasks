@@ -11,14 +11,18 @@ const CalendarIcon = () => (
     </svg>
 );
 
-// Remove FlagIcon and StatusIcon since we're removing those UI elements
+// Function to get today's date in YYYY-MM-DD format
+const getTodayDateString = () => {
+    const today = new Date();
+    return today.toISOString().split('T')[0]; // Returns YYYY-MM-DD
+};
 
 function CreateTaskForm({ isSubmitting, formError, handleCreateTask }) {
     const [formData, setFormData] = useState({
         taskTitle: '',
         description: '',
-        startDate: '',
-        dueDate: '',
+        startDate: getTodayDateString(), // Default to current date
+        dueDate: getTodayDateString(), // Default to current date
         priority: 'MEDIUM', // Still keeping default values for API
         status: 1 // Default status is 1 (PENDING)
     });
@@ -68,8 +72,8 @@ function CreateTaskForm({ isSubmitting, formError, handleCreateTask }) {
             setFormData({
                 taskTitle: '',
                 description: '',
-                startDate: '',
-                dueDate: '',
+                startDate: getTodayDateString(), // Default to current date
+                dueDate: getTodayDateString(), // Default to current date
                 priority: 'MEDIUM',
                 status: 1
             });
