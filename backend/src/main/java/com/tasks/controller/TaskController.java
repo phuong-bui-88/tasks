@@ -59,11 +59,6 @@ public class TaskController {
         return ResponseEntity.ok(taskService.getTasksByStatus(status));
     }
     
-    @GetMapping("/assignee/{email}")
-    public ResponseEntity<List<TaskDTO>> getTasksByAssignee(@PathVariable String email) {
-        return ResponseEntity.ok(taskService.getTasksByAssignee(email));
-    }
-    
     @GetMapping("/my-tasks")
     public ResponseEntity<List<TaskDTO>> getMyTasks() {
         User currentUser = SecurityUtils.getCurrentUser(userRepository)
@@ -80,16 +75,5 @@ public class TaskController {
     public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
         taskService.deleteTask(id);
         return ResponseEntity.noContent().build();
-    }
-    
-    @GetMapping("/reminders")
-    public ResponseEntity<List<TaskDTO>> getTasksDueForReminder() {
-        return ResponseEntity.ok(taskService.getTasksDueForReminder());
-    }
-    
-    @PutMapping("/{id}/reminder-sent")
-    public ResponseEntity<Void> markReminderSent(@PathVariable Long id) {
-        taskService.markReminderSent(id);
-        return ResponseEntity.ok().build();
     }
 }

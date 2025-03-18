@@ -11,10 +11,7 @@ public interface TaskService {
     TaskDTO getTaskById(Long id);
     List<TaskDTO> getAllTasks();
     List<TaskDTO> getTasksByStatus(Task.TaskStatus status);
-    List<TaskDTO> getTasksByAssignee(String email);
     List<TaskDTO> getTasksByAuthor(Long authorId);
     TaskDTO updateTask(Long id, TaskDTO taskDTO);
     void deleteTask(Long id);
-    List<TaskDTO> getTasksDueForReminder();
-    void markReminderSent(Long id);
 }

@@ -10,7 +10,6 @@ public class TaskDTO {
     private LocalDateTime startDate;
     private LocalDateTime dueDate;
     private Task.TaskStatus status;
-    private String assigneeEmail;
     private Long authorId;
     private String authorUsername;
     
@@ -24,7 +23,6 @@ public class TaskDTO {
         this.startDate = task.getStartDate();
         this.dueDate = task.getDueDate();
         this.status = task.getStatus();
-        this.assigneeEmail = task.getAssigneeEmail();
         if (task.getAuthor() != null) {
             this.authorId = task.getAuthor().getId();
             this.authorUsername = task.getAuthor().getUsername();
@@ -44,7 +42,6 @@ public class TaskDTO {
         task.setStartDate(this.startDate);
         task.setDueDate(this.dueDate);
         task.setStatus(this.status);
-        task.setAssigneeEmail(this.assigneeEmail);
         // Author is set by the service layer
         return task;
     }
@@ -96,14 +93,6 @@ public class TaskDTO {
     
     public void setStatus(Task.TaskStatus status) {
         this.status = status;
-    }
-    
-    public String getAssigneeEmail() {
-        return assigneeEmail;
-    }
-    
-    public void setAssigneeEmail(String assigneeEmail) {
-        this.assigneeEmail = assigneeEmail;
     }
     
     public Long getAuthorId() {

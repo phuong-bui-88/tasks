@@ -35,10 +35,6 @@ public class Task {
     @Enumerated(EnumType.ORDINAL)
     private TaskStatus status;
     
-    private String assigneeEmail;
-    
-    private boolean reminderSent;
-    
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
     private User author;
@@ -114,22 +110,6 @@ public class Task {
 
     public void setStatus(TaskStatus status) {
         this.status = status;
-    }
-
-    public String getAssigneeEmail() {
-        return assigneeEmail;
-    }
-
-    public void setAssigneeEmail(String assigneeEmail) {
-        this.assigneeEmail = assigneeEmail;
-    }
-
-    public boolean isReminderSent() {
-        return reminderSent;
-    }
-
-    public void setReminderSent(boolean reminderSent) {
-        this.reminderSent = reminderSent;
     }
 
     public User getAuthor() {

@@ -30,7 +30,6 @@ public class TaskServiceImpl implements TaskService {
         if (task.getStatus() == null) {
             task.setStatus(Task.TaskStatus.PENDING);
         }
-        task.setReminderSent(false);
         task.setAuthor(author);
         Task savedTask = taskRepository.save(task);
         return TaskDTO.fromEntity(savedTask);
@@ -58,13 +57,6 @@ public class TaskServiceImpl implements TaskService {
     }
     
     @Override
-    public List<TaskDTO> getTasksByAssignee(String email) {
-        return taskRepository.findByAssigneeEmail(email).stream()
-                .map(TaskDTO::fromEntity)
-                .collect(Collectors.toList());
-    }
-    
-    @Override
     public List<TaskDTO> getTasksByAuthor(Long authorId) {
         return taskRepository.findByAuthorId(authorId).stream()
                 .map(TaskDTO::fromEntity)
@@ -78,9 +70,9 @@ public class TaskServiceImpl implements TaskService {
         
         existingTask.setTitle(taskDTO.getTitle());
         existingTask.setDescription(taskDTO.getDescription());
+        existingTask.setStartDate(taskDTO.getStartDate());
         existingTask.setDueDate(taskDTO.getDueDate());
         existingTask.setStatus(taskDTO.getStatus());
-        existingTask.setAssigneeEmail(taskDTO.getAssigneeEmail());
         
         Task updatedTask = taskRepository.save(existingTask);
         return TaskDTO.fromEntity(updatedTask);
@@ -91,22 +83,5 @@ public class TaskServiceImpl implements TaskService {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found with id: " + id));
         taskRepository.delete(task);
-    }
-    
-    @Override
-    public List<TaskDTO> getTasksDueForReminder() {
-        LocalDateTime now = LocalDateTime.now();
-        return taskRepository.findByDueDateBeforeAndStatusNotAndReminderSentFalse(now.plusDays(1), Task.TaskStatus.COMPLETED)
-                .stream()
-                .map(TaskDTO::fromEntity)
-                .collect(Collectors.toList());
-    }
-    
-    @Override
-    public void markReminderSent(Long id) {
-        Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Task not found with id: " + id));
-        task.setReminderSent(true);
-        taskRepository.save(task);
     }
 }
