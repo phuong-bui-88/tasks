@@ -18,17 +18,32 @@ export const TaskProvider = ({ children }) => {
         status: ''
     });
 
-    // Fetch tasks on component mount
+    // Add month/year filter state
+    const currentDate = new Date();
+    const [filterMonth, setFilterMonth] = useState(currentDate.getMonth());
+    const [filterYear, setFilterYear] = useState(currentDate.getFullYear());
+
+    // Fetch tasks on component mount or when filters change
     useEffect(() => {
         fetchTasks();
-    }, []);
+    }, [filterMonth, filterYear]);
 
     // Function to fetch tasks from API
     const fetchTasks = async () => {
         setLoading(true);
         try {
             const data = await getAllTasks();
-            setTasks(data);
+
+            // Filter tasks by month and year
+            const filteredTasks = data.filter(task => {
+                if (!task.startDate) return false;
+
+                const startDate = new Date(task.startDate);
+                return startDate.getMonth() === filterMonth &&
+                    startDate.getFullYear() === filterYear;
+            });
+
+            setTasks(filteredTasks);
             setError(null);
         } catch (err) {
             console.error('Failed to fetch tasks:', err);
@@ -36,6 +51,12 @@ export const TaskProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
+    };
+
+    // Function to update the current filter
+    const setCurrentFilter = (month, year) => {
+        setFilterMonth(month);
+        setFilterYear(year);
     };
 
     // Function to handle task creation
@@ -165,6 +186,8 @@ export const TaskProvider = ({ children }) => {
         formError,
         editingTaskId,
         editFormData,
+        filterMonth,
+        filterYear,
         fetchTasks,
         handleCreateTask,
         handleEditClick,
@@ -172,7 +195,8 @@ export const TaskProvider = ({ children }) => {
         handleEditFormChange,
         handleUpdateTask,
         handleDeleteTask,
-        setFormError
+        setFormError,
+        setCurrentFilter
     };
 
     return <TaskContext.Provider value={value}>{children}</TaskContext.Provider>;

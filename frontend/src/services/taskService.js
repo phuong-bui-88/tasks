@@ -22,10 +22,15 @@ const formatDateForApi = (dateString) => {
     return `${dateString}T12:00:00`;
 };
 
-// Fetch all tasks
-export const getAllTasks = async () => {
+// Fetch all tasks with optional month/year filter
+export const getAllTasks = async (month, year) => {
     try {
-        const response = await apiClient.get(BASE_PATH);
+        // If month and year are provided, add them as query params
+        const queryParams = month !== undefined && year !== undefined
+            ? `?month=${month + 1}&year=${year}`
+            : '';
+
+        const response = await apiClient.get(`${BASE_PATH}${queryParams}`);
         return response.data;
     } catch (error) {
         throw error;

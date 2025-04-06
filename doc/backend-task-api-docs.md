@@ -180,12 +180,19 @@ curl -X GET http://localhost:8080/api/tasks/1 \
 ### Get All Tasks
 `GET /api/tasks`
 
-Retrieves all tasks in the system.
+Retrieves all tasks in the system. Optionally filters by month and year if query parameters are provided.
 
 #### Request
 
 ```http
 GET /api/tasks
+Authorization: Bearer {token}
+```
+
+Or with filter parameters:
+
+```http
+GET /api/tasks?month=11&year=2023
 Authorization: Bearer {token}
 ```
 
@@ -219,11 +226,13 @@ Authorization: Bearer {token}
 
 #### Implementation Details
 
-The get all tasks endpoint is implemented in the `TaskController` class and uses the `TaskService` for retrieving all tasks:
+The get all tasks endpoint is implemented in the `TaskController` class and uses the `TaskService` for retrieving tasks:
 
-1. Retrieves all tasks from the database
+1. Checks if month and year parameters are provided:
+   - If both are provided, filters tasks by those parameters
+   - If not, retrieves all tasks from the database
 2. Maps each task entity to a DTO
-3. Returns a list of all task information
+3. Returns a list of task information
 
 #### Related Files
 
@@ -235,7 +244,12 @@ The get all tasks endpoint is implemented in the `TaskController` class and uses
 #### Sample cURL
 
 ```bash
+# Get all tasks
 curl -X GET http://localhost:8080/api/tasks \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+
+# Filter tasks by month and year
+curl -X GET "http://localhost:8080/api/tasks?month=11&year=2023" \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 ```
 

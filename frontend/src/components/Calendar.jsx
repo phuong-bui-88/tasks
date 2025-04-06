@@ -1,18 +1,25 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useState } from 'react';
+import { useTask } from '../contexts/TaskContext';
 
 function Calendar({ tasks, scrollToTask }) {
-    // State for tracking current month/year
-    const [currentDate, setCurrentDate] = useState(new Date());
+    const { setCurrentFilter, filterMonth, filterYear } = useTask();
+
+    // State for tracking current month/year - initialize from context
+    const [currentDate, setCurrentDate] = useState(new Date(filterYear, filterMonth, 1));
 
     // Get current month and year
     const currentMonth = currentDate.getMonth();
     const currentYear = currentDate.getFullYear();
 
+    // Update context when local state changes
+    useEffect(() => {
+        setCurrentFilter(currentMonth, currentYear);
+    }, [currentMonth, currentYear, setCurrentFilter]);
+
     // Format date for display and as key - ensure consistent formatting
     const formatDateKey = (date) => {
         if (!date) return "";
-        // Ensure the date is standardized by removing time component
         const d = new Date(date);
         return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     };
@@ -32,7 +39,6 @@ function Calendar({ tasks, scrollToTask }) {
 
         tasks.forEach(task => {
             if (task.dueDate) {
-                // Ensure consistent date key format regardless of original date string format
                 const dueDate = new Date(task.dueDate);
                 const dateKey = formatDateKey(dueDate);
 
@@ -63,13 +69,9 @@ function Calendar({ tasks, scrollToTask }) {
         const lastDay = new Date(currentYear, currentMonth + 1, 0);
         const daysInMonth = lastDay.getDate();
 
-        // Get day of week for first day (0 = Sunday, 6 = Saturday)
         const firstDayOfWeek = firstDay.getDay();
-
-        // Create array with empty slots for days from previous month
         const days = Array(firstDayOfWeek).fill(null);
 
-        // Add days of current month
         for (let i = 1; i <= daysInMonth; i++) {
             days.push(new Date(currentYear, currentMonth, i));
         }
@@ -81,22 +83,25 @@ function Calendar({ tasks, scrollToTask }) {
     const isWeekend = (date) => {
         if (!date) return false;
         const day = date.getDay();
-        return day === 0 || day === 6; // 0 is Sunday, 6 is Saturday
+        return day === 0 || day === 6;
     };
 
     // Navigate to previous month
     const prevMonth = () => {
-        setCurrentDate(new Date(currentYear, currentMonth - 1, 1));
+        const newDate = new Date(currentYear, currentMonth - 1, 1);
+        setCurrentDate(newDate);
     };
 
     // Navigate to next month
     const nextMonth = () => {
-        setCurrentDate(new Date(currentYear, currentMonth + 1, 1));
+        const newDate = new Date(currentYear, currentMonth + 1, 1);
+        setCurrentDate(newDate);
     };
 
     // Go to current month
     const goToToday = () => {
-        setCurrentDate(new Date());
+        const today = new Date();
+        setCurrentDate(today);
     };
 
     // Format month and year for header
@@ -171,7 +176,6 @@ function Calendar({ tasks, scrollToTask }) {
                 </div>
                 <div className="grid grid-cols-7 bg-white dark:bg-gray-800">
                     {calendarDays.map((day, index) => {
-                        // Use the consistent date formatting for task lookup
                         const dateKey = formatDateKey(day);
                         const taskCount = day ? (tasksByDate[dateKey]?.length || 0) : 0;
                         const isCurrentDate = isToday(day);
@@ -210,7 +214,6 @@ function Calendar({ tasks, scrollToTask }) {
                                             )}
                                         </div>
 
-                                        {/* Show dots for tasks instead of full task items */}
                                         {taskCount > 0 && (
                                             <div className="flex flex-wrap gap-0.5 mt-1 justify-center">
                                                 {tasksByDate[dateKey].slice(0, 4).map((task, i) => (

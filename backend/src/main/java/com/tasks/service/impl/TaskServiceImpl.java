@@ -84,4 +84,16 @@ public class TaskServiceImpl implements TaskService {
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found with id: " + id));
         taskRepository.delete(task);
     }
+    
+    @Override
+    public List<TaskDTO> getTasksByStartDateMonthAndYear(int month, int year) {
+        return taskRepository.findAll().stream()
+                .filter(task -> {
+                    if (task.getStartDate() == null) return false;
+                    return task.getStartDate().getMonthValue() == month && 
+                           task.getStartDate().getYear() == year;
+                })
+                .map(TaskDTO::fromEntity)
+                .collect(Collectors.toList());
+    }
 }

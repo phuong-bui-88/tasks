@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -50,7 +51,12 @@ public class TaskController {
     }
     
     @GetMapping
-    public ResponseEntity<List<TaskDTO>> getAllTasks() {
+    public ResponseEntity<List<TaskDTO>> getAllTasks(
+            @RequestParam(required = false) Integer month,
+            @RequestParam(required = false) Integer year) {
+        if (month != null && year != null) {
+            return ResponseEntity.ok(taskService.getTasksByStartDateMonthAndYear(month, year));
+        }
         return ResponseEntity.ok(taskService.getAllTasks());
     }
     

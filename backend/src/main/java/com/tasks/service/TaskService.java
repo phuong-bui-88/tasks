@@ -14,4 +14,5 @@ public interface TaskService {
     List<TaskDTO> getTasksByAuthor(Long authorId);
     TaskDTO updateTask(Long id, TaskDTO taskDTO);
     void deleteTask(Long id);
+    List<TaskDTO> getTasksByStartDateMonthAndYear(int month, int year);
 }
