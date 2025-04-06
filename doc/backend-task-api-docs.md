@@ -326,10 +326,9 @@ Authorization: Bearer {token}
   "title": "Implement user authentication and authorization",
   "description": "Add JWT authentication and role-based authorization to the backend API",
   "startDate": "2023-12-01T09:00:00",
-  "status": 2, // Status changed from PENDING (1) to COMPLETED (2)
+  "status": 0, // Status changed from PENDING (1) to COMPLETED (0)
   "dueDate": "2023-12-20T12:00:00"
 }
-```
 
 #### Response
 
@@ -398,7 +397,7 @@ curl -X PUT http://localhost:8080/api/tasks/1 \
     "title": "Implement user authentication and authorization",
     "description": "Add JWT authentication and role-based authorization to the backend API",
     "startDate": "2023-12-01T09:00:00",
-    "status": 2,
+    "status": 0,
     "dueDate": "2023-12-20T12:00:00"
   }'
 ```
