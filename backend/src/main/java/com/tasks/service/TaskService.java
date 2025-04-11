@@ -15,4 +15,8 @@ public interface TaskService {
     TaskDTO updateTask(Long id, TaskDTO taskDTO);
     void deleteTask(Long id);
     List<TaskDTO> getTasksByStartDateMonthAndYear(int month, int year);
+    
+    // New methods for Google API integration
+    boolean synchronizeTaskWithGoogle(Long taskId);
+    void handleGoogleTaskUpdate(String googleTaskId, String payload);
 }

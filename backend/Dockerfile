@@ -1,12 +1,22 @@
-FROM maven:3.8-openjdk-17 AS build
-WORKDIR /app
-COPY . .
-RUN mvn clean package -DskipTests
+# Use Maven image for building
+FROM maven:3.8-eclipse-temurin-17 as build
+WORKDIR /workspace/app
 
-FROM openjdk:17-slim
-WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
-EXPOSE 8080
-EXPOSE 5005
-ENV JAVA_TOOL_OPTIONS "-agentlib:jdwp=transport=dt_socket,address=*:5005,server=y,suspend=n"
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Copy pom.xml and source code
+COPY pom.xml .
+COPY src src
+
+# Build the application
+RUN mvn package -DskipTests
+
+# Create a slim runtime image
+FROM eclipse-temurin:17-jre-alpine
+VOLUME /tmp
+COPY --from=build /workspace/app/target/*.jar app.jar
+
+# Add debug options and configure JVM
+ENV JAVA_OPTS="-XX:+UseG1GC -Xms512m -Xmx1024m"
+ENV DEBUG_OPTS=""
+
+# Run with proper options
+ENTRYPOINT java $JAVA_OPTS $DEBUG_OPTS -jar /app.jar
