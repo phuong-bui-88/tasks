@@ -1,5 +1,5 @@
 # Use Maven image for building
-FROM maven:3.8-eclipse-temurin-17 as build
+FROM maven:3.9.4-eclipse-temurin-17 AS build
 WORKDIR /workspace/app
 
 # Copy pom.xml and source code
