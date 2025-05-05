@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import authService from '../services/authService';
 
 // Create context
 const UserContext = createContext(null);
@@ -61,7 +62,7 @@ export const UserProvider = ({ children }) => {
     };
 
     // Handle logout
-    const handleLogout = () => {
+    const handleLogout = async () => {
         setIsLoggedIn(false);
         setUserData({
             id: '',
@@ -69,10 +70,8 @@ export const UserProvider = ({ children }) => {
             email: ''
         });
 
-        // Clear localStorage
-        localStorage.removeItem('isLoggedIn');
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
+        // Call improved logout (clears storage, backend, multi-tab)
+        await authService.logout();
     };
 
     // Update user profile
@@ -93,6 +92,18 @@ export const UserProvider = ({ children }) => {
             console.error('Error updating user data:', error);
         }
     };
+
+    // Listen for logout in other tabs
+    useEffect(() => {
+        const onStorage = (e) => {
+            if (e.key === 'logout-event') {
+                setIsLoggedIn(false);
+                setUserData({ id: '', username: 'User', email: '' });
+            }
+        };
+        window.addEventListener('storage', onStorage);
+        return () => window.removeEventListener('storage', onStorage);
+    }, []);
 
     // Context value
     const value = {

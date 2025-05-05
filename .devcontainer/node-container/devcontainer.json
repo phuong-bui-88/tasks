@@ -1,8 +1,9 @@
 {
 	"name": "React Vite",
-	"dockerComposeFile": "./../docker-compose.yml",
+	"dockerComposeFile": "../../docker-compose.yml",
 	"service": "frontend",
-	"workspaceFolder": "/app",
+	"workspaceFolder": "/workspace/frontend",
+	"shutdownAction": "none",
 	"customizations": {
 		"vscode": {
 			"extensions": [

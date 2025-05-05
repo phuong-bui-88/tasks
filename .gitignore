@@ -7,6 +7,10 @@ node_modules/
 /dist
 /build
 
+# Ignore the tokens directory
+./backend/tokens/
+./backend/tokens/*
+
 # Environment variables
 .env
 .env.local

@@ -1,8 +1,25 @@
 {
     "name": "Java Dev Container",
     "dockerComposeFile": [
-        "./../docker-compose.yml"
+        "../../docker-compose.yml"
     ],
     "service": "backend",
-    "workspaceFolder": "/app"
+    "workspaceFolder": "/workspace/backend",
+    "features": {
+        "ghcr.io/devcontainers/features/java:1": {
+            "version": "none",
+            "installMaven": "true",
+            "mavenVersion": "3.8.6",
+            "installGradle": "false"
+        }
+    },
+    "shutdownAction": "none",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "dbaeumer.vscode-eslint",
+                "esbenp.prettier-vscode"
+            ]
+        }
+    }
 }
