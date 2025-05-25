@@ -61,13 +61,8 @@ services:
     environment:
       REACT_APP_API_URL: ${REACT_APP_API_URL}
       NODE_ENV: development
-      CHOKIDAR_USEPOLLING: "true"
-      VITE_PORT: ${FRONTEND_PORT}
-    # Use the node user instead of root
     networks:
       - tasks-network
-    command: ["npm", "start"]
-    user: "node"
 
 networks:
   tasks-network:

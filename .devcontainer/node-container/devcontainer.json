@@ -1,6 +1,8 @@
 {
 	"name": "React Vite",
-	"dockerComposeFile": "../../docker-compose.yml",
+	"dockerComposeFile": [
+		"../../docker-compose.yml"
+	],
 	"service": "frontend",
 	"workspaceFolder": "/workspace/frontend",
 	"shutdownAction": "none",
@@ -8,8 +10,14 @@
 		"vscode": {
 			"extensions": [
 				"dbaeumer.vscode-eslint",
-				"esbenp.prettier-vscode"
+				"esbenp.prettier-vscode",
+				"dsznajder.es7-react-js-snippets"
 			]
 		}
-	}
+	},
+	"remoteUser": "node",
+	"postCreateCommand": "npm install",
+	"forwardPorts": [
+		4010
+	]
 }

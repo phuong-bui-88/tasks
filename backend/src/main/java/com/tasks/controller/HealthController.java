@@ -23,7 +23,7 @@ public class HealthController {
         Map<String, Object> response = new HashMap<>();
 
         response.put("status", "running");
-        response.put("message", "Hello! The backend service is up and running 4.");
+        response.put("message", "Hello! The backend service is up and running 5.");
         response.put("timestamp", System.currentTimeMillis());
 
         return ResponseEntity.ok(response);
